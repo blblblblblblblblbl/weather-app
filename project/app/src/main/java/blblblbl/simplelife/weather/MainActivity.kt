@@ -3,6 +3,8 @@ package blblblbl.simplelife.weather
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +17,9 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,17 +37,28 @@ import blblblbl.simplelife.weather.navigation.DrawerContent
 import blblblbl.simplelife.weather.navigation.MainDest
 import blblblbl.simplelife.weather.navigation.OnBoardingDest
 import blblblbl.simplelife.weather.navigation.graphs.citiesGraph
+import blblblbl.simplelife.weather.presentation.MainActivityViewModel
 import blblblbl.simplelife.weather.ui.theme.WeatherTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainActivityViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WeatherTheme {
-                // A surface container using the 'background' color from the theme
+            val systemUiController = rememberSystemUiController()
+            WeatherTheme(
+                configFlow = viewModel.getSettingsFlow()
+            ) {
+                val useDarkIcons = !isSystemInDarkTheme()
+                val color = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
+                SideEffect {
+                    systemUiController.setSystemBarsColor(color, darkIcons = useDarkIcons)
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
