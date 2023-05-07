@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
 import blblblbl.simplelife.weather.navigation.AuthorsDest
@@ -33,8 +34,10 @@ import blblblbl.simplelife.weather.navigation.MainDest
 import blblblbl.simplelife.weather.navigation.OnBoardingDest
 import blblblbl.simplelife.weather.navigation.graphs.citiesGraph
 import blblblbl.simplelife.weather.ui.theme.WeatherTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +122,7 @@ fun AppNavHost(
         }
         citiesGraph(navController)
         composable(route = AppSettingDest.route) {
-            Text(text = AppSettingDest.name)
+            SettingsFragment()
         }
         composable(route = OnBoardingDest.route) {
             Text(text = OnBoardingDest.name)
