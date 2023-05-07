@@ -46,8 +46,8 @@ fun ThemePicker(
     val context = LocalContext.current
     DropDownCard(
         modifier = Modifier
-            .padding(20.dp)
-            .heightIn(max = 300.dp),
+            .padding(20.dp),
+            //.heightIn(max = 300.dp),
         header = "theme"
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
