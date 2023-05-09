@@ -16,3 +16,5 @@ rootProject.name = "Weather"
 include ':app'
 include ':feature'
 include ':feature:settings'
+include ':shared'
+include ':shared:forecast'
