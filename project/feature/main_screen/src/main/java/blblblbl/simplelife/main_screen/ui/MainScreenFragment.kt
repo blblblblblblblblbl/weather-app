@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import blblblbl.simplelife.forecast.domain.model.Forecast
 import blblblbl.simplelife.forecast.domain.model.ForecastResponse
@@ -283,6 +284,7 @@ fun DayExpanded(
                 HourCard(hour = hour)
             }
         }
+        DetailedDayInfo(forecastday = forecastday)
     }
 }
 
@@ -338,6 +340,85 @@ fun HourCard(
                     modifier = Modifier.requiredHeight(24.dp)
                 )
                 Text(text = "${rain}%")
+            }
+        }
+    }
+}
+
+@Composable
+fun DetailedDayInfo(
+    modifier: Modifier = Modifier,
+    forecastday: Forecastday
+){
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(6.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    forecastday.day?.condition?.icon?.let {
+                        GlideImage(
+                            imageModel = { "https:" + it },
+                            modifier = Modifier.size(64.dp)
+                        )
+                    }
+                    forecastday.day?.condition?.text?.let{
+                        Text(text = it, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp))
+                    }
+                    forecastday.day?.avgtempC?.let {
+                        Text(
+                            text = "${it}°C",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    }
+                    val minTemp = forecastday.day?.mintempC
+                    val maxTemp = forecastday.day?.maxtempC
+                    if (minTemp!=null&&maxTemp!=null){
+                        Text(text = "${minTemp}...${maxTemp}°C")
+                    }
+                }
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    forecastday.day?.maxwindKph?.let { 
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "max wind    ")
+                            Text(text = "${it} kmh")
+                        }
+                    }
+                    forecastday.day?.avghumidity?.let { 
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "humidity    ")
+                            Text(text = "${it}")
+                        }
+                    }
+                    forecastday.day?.uv?.let {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "uv    ")
+                            Text(text = "${it}")
+                        }
+                    }
+                }
             }
         }
     }
