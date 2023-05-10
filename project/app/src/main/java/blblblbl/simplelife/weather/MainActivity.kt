@@ -28,6 +28,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import blblblbl.simplelife.main_screen.ui.MainScreenFragment
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
@@ -133,7 +134,7 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(route = MainDest.route) {
-            Text(text = MainDest.name)
+            MainScreenFragment()
         }
         citiesGraph(navController)
         composable(route = AppSettingDest.route) {
