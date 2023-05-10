@@ -56,8 +56,6 @@ fun DropDownCard(
                     content()
                 }
             }
-
         }
-
     }
 }

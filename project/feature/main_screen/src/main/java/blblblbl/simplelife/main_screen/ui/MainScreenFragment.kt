@@ -1,13 +1,11 @@
 package blblblbl.simplelife.main_screen.ui
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,10 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationCity
-import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,14 +34,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import blblblbl.simplelife.forecast.domain.model.Current
 import blblblbl.simplelife.forecast.domain.model.Forecast
 import blblblbl.simplelife.forecast.domain.model.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.Forecastday
+import blblblbl.simplelife.forecast.domain.model.Hour
 import blblblbl.simplelife.main_screen.R
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
-import com.google.android.material.datepicker.DateSelector
+import com.google.android.material.elevation.SurfaceColors
 import com.skydoves.landscapist.glide.GlideImage
-import java.time.LocalDate
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -205,43 +202,143 @@ fun NextDays(
                 modifier = Modifier.fillMaxWidth(),
                 header = {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        day.date?.let {
-                            Text(text = "${it.subSequence(8, 10)}.${it.subSequence(5, 7)}")
-                        }
-                        day.day?.avgtempC?.let {
-                            Icon(
-                                painter = painterResource(id = R.drawable.temperature_icon),
-                                contentDescription = "temperature",
-                                modifier = Modifier.requiredWidth(20.dp)
-                            )
-                            Text(text = "${it}°C")
-                        }
-                        day.day?.avgvisKm?.let { wind ->
-                            Icon(
-                                painter = painterResource(id = R.drawable.wind_icon),
-                                contentDescription = "wind speed",
-                                modifier = Modifier.requiredWidth(24.dp)
-                            )
-                            Text(text = "${wind} km/h")
-                        }
-                        day.day?.dailyChanceOfRain?.let { rain ->
-                            Icon(
-                                painter = painterResource(id = R.drawable.rain_icon),
-                                contentDescription = "rain chance",
-                                modifier = Modifier.requiredWidth(24.dp)
-                            )
-                            Text(text = "${rain}%")
-                        }
+                        DayHead(day = day)
                     }
                 }
             ) {
-
+                DayExpanded(
+                    modifier = Modifier.padding(10.dp),
+                    forecastday = day
+                )
             }
         }
     }
+}
+@Composable
+fun DayHead(
+    modifier: Modifier = Modifier,
+    day:Forecastday
+){
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        day.date?.let {
+            Text(text = "${it.subSequence(8, 10)}.${it.subSequence(5, 7)}")
+        }
+        day.day?.avgtempC?.let {
+            Icon(
+                painter = painterResource(id = R.drawable.temperature_icon),
+                contentDescription = "temperature",
+                modifier = Modifier.requiredWidth(20.dp)
+            )
+            Text(text = "${it}°C")
+        }
+        day.day?.avgvisKm?.let { wind ->
+            Icon(
+                painter = painterResource(id = R.drawable.wind_icon),
+                contentDescription = "wind speed",
+                modifier = Modifier.requiredWidth(24.dp)
+            )
+            Text(text = "${wind} km/h")
+        }
+        day.day?.dailyChanceOfRain?.let { rain ->
+            Icon(
+                painter = painterResource(id = R.drawable.rain_icon),
+                contentDescription = "rain chance",
+                modifier = Modifier.requiredWidth(24.dp)
+            )
+            Text(text = "${rain}%")
+        }
+    }
+}
 
+@Composable
+fun DayExpanded(
+    modifier: Modifier = Modifier,
+    forecastday: Forecastday
+){
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            forecastday.hour.forEach {hour->
+                HourCard(hour = hour)
+            }
+        }
+    }
+}
+
+@Composable
+fun HourCard(
+    modifier: Modifier = Modifier,
+    hour: Hour
+){
+    Card(
+        modifier = modifier
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = MaterialTheme.shapes.large
+            ),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            hour.time?.let {
+                Text(text = it.substring(11))
+            }
+            hour.tempC?.let {
+                Text(
+                    text = "${it}°C",
+                    style = MaterialTheme.typography.headlineLarge
+                )
+            }
+            hour.condition?.icon?.let {
+                GlideImage(
+                    imageModel = { "https:" + it },
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+            hour.windKph?.let {wind->
+                Icon(
+                    painter = painterResource(id = R.drawable.wind_icon),
+                    contentDescription = "wind speed",
+                    modifier = Modifier.requiredHeight(24.dp)
+                )
+                Text(text = "${wind} km/h")
+            }
+            hour.chanceOfRain?.let { rain ->
+                Icon(
+                    painter = painterResource(id = R.drawable.rain_icon),
+                    contentDescription = "rain chance",
+                    modifier = Modifier.requiredHeight(24.dp)
+                )
+                Text(text = "${rain}%")
+            }
+        }
+    }
 }
