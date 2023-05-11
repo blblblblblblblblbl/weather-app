@@ -14,6 +14,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -39,6 +41,8 @@ class MainScreenFragmentViewModel @Inject constructor(
     private val _loadState = MutableStateFlow<LoadingState>(LoadingState.LOADED)
     val loadState = _loadState.asStateFlow()
 
+    var currentRequest :Job? = null
+
     init {
         getLast()
     }
@@ -52,7 +56,8 @@ class MainScreenFragmentViewModel @Inject constructor(
     }
     private fun searchForecast(query: String, context: Context){
         _loadState.value = LoadingState.LOADING
-        viewModelScope.launch {
+        currentRequest?.cancel()
+        currentRequest = viewModelScope.launch {
             val job = viewModelScope.launch {
                 try {
                     val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
@@ -64,6 +69,7 @@ class MainScreenFragmentViewModel @Inject constructor(
                 }
             }
             job.join()
+            currentRequest = null
             _loadState.value = LoadingState.LOADED
         }
     }
@@ -71,7 +77,8 @@ class MainScreenFragmentViewModel @Inject constructor(
         searchForecast(_searchQuery.value,context)
     }
     private fun getForecastByLocation(location:Location){
-        viewModelScope.launch {
+        currentRequest?.cancel()
+        currentRequest = viewModelScope.launch {
             val job = viewModelScope.launch {
                 _loadState.value = LoadingState.LOADING
                 val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
@@ -79,6 +86,7 @@ class MainScreenFragmentViewModel @Inject constructor(
                 lastSearchUseCase.saveLast(forecast)
             }
             job.join()
+            currentRequest = null
             _loadState.value = LoadingState.LOADED
         }
 
