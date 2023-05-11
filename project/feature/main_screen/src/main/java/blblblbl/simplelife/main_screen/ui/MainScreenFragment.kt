@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +49,7 @@ import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday
 import blblblbl.simplelife.forecast.domain.model.forecast.Hour
 import blblblbl.simplelife.main_screen.R
+import blblblbl.simplelife.main_screen.presentation.LoadingState
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -62,6 +64,7 @@ fun MainScreenFragment() {
     val forecast by viewModel.forecast.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val appConfig by viewModel.settings.collectAsState()
+    val loadState by viewModel.loadState.collectAsState()
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -144,8 +147,18 @@ fun MainScreenFragment() {
                 }
 
             }
+            if (loadState == LoadingState.LOADING){
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.fillMaxSize()){
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            }
         }
     }
+
 }
 
 @Composable

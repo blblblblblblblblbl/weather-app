@@ -35,6 +35,10 @@ class MainScreenFragmentViewModel @Inject constructor(
     val searchQuery = _searchQuery.asStateFlow()
 
     val settings = settingsUseCase.getAppConfigFlow()
+
+    private val _loadState = MutableStateFlow<LoadingState>(LoadingState.LOADED)
+    val loadState = _loadState.asStateFlow()
+
     init {
         getLast()
     }
@@ -47,15 +51,20 @@ class MainScreenFragmentViewModel @Inject constructor(
         }
     }
     private fun searchForecast(query: String, context: Context){
+        _loadState.value = LoadingState.LOADING
         viewModelScope.launch {
-            try {
-                val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
-                _forecast.value = forecast
-                lastSearchUseCase.saveLast(forecast)
+            val job = viewModelScope.launch {
+                try {
+                    val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
+                    _forecast.value = forecast
+                    lastSearchUseCase.saveLast(forecast)
+                }
+                catch (e:Throwable){
+                    Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+                }
             }
-            catch (e:Throwable){
-                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
-            }
+            job.join()
+            _loadState.value = LoadingState.LOADED
         }
     }
     fun getForecastByName(context:Context){
@@ -63,10 +72,16 @@ class MainScreenFragmentViewModel @Inject constructor(
     }
     private fun getForecastByLocation(location:Location){
         viewModelScope.launch {
-            val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
-            _forecast.value = forecast
-            lastSearchUseCase.saveLast(forecast)
+            val job = viewModelScope.launch {
+                _loadState.value = LoadingState.LOADING
+                val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
+                _forecast.value = forecast
+                lastSearchUseCase.saveLast(forecast)
+            }
+            job.join()
+            _loadState.value = LoadingState.LOADED
         }
+
     }
     fun locationOnClick(context:Context){
         viewModelScope.launch {
