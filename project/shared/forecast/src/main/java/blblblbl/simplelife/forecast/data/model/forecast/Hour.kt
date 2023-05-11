@@ -1,6 +1,5 @@
-package blblblbl.simplelife.forecast.domain.model
+package blblblbl.simplelife.forecast.data.model.forecast
 
-import blblblbl.simplelife.forecast.domain.model.Condition
 import com.google.gson.annotations.SerializedName
 
 

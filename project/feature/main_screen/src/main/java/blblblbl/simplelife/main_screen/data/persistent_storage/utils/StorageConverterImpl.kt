@@ -3,7 +3,7 @@ package blblblbl.simplelife.main_screen.data.persistent_storage.utils
 
 
 
-import blblblbl.simplelife.forecast.domain.model.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.main_screen.di.LastSearchFeature
 import javax.inject.Inject
 

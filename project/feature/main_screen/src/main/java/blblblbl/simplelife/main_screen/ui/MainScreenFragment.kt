@@ -36,15 +36,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import blblblbl.simplelife.forecast.domain.model.Astro
-import blblblbl.simplelife.forecast.domain.model.Day
-import blblblbl.simplelife.forecast.domain.model.Forecast
-import blblblbl.simplelife.forecast.domain.model.ForecastResponse
-import blblblbl.simplelife.forecast.domain.model.Forecastday
-import blblblbl.simplelife.forecast.domain.model.Hour
+import blblblbl.simplelife.forecast.domain.model.forecast.Astro
+import blblblbl.simplelife.forecast.domain.model.forecast.Day
+import blblblbl.simplelife.forecast.domain.model.forecast.Forecast
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday
+import blblblbl.simplelife.forecast.domain.model.forecast.Hour
 import blblblbl.simplelife.main_screen.R
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
-import com.google.android.material.elevation.SurfaceColors
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -66,7 +65,7 @@ fun MainScreenFragment() {
                         viewModel.updateSearchQuery(query = it)
                     },
                     onSearchClicked = {
-                        viewModel.getForecast(context)
+                        viewModel.getForecastByName(context)
                     },
                     onCloseClicked = {
                         viewModel.updateSearchQuery("")
@@ -92,7 +91,7 @@ fun MainScreenFragment() {
                         .padding(horizontal = 24.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { viewModel.getForecastByLocation(context) }) {
                         Icon(Icons.Default.MyLocation, contentDescription = "location button")
                     }
                 }
@@ -238,7 +237,7 @@ fun NextDays(
 @Composable
 fun DayHead(
     modifier: Modifier = Modifier,
-    day:Forecastday
+    day: Forecastday
 ){
     Row(
         modifier = modifier

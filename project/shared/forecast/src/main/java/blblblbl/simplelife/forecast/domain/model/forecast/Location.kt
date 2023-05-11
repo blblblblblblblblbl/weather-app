@@ -1,4 +1,4 @@
-package blblblbl.simplelife.forecast.domain.model
+package blblblbl.simplelife.forecast.domain.model.forecast
 
 import com.google.gson.annotations.SerializedName
 

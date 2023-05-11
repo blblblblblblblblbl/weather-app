@@ -1,6 +1,6 @@
 package blblblbl.simplelife.forecast.data.network
 
-import blblblbl.simplelife.forecast.data.model.ForecastResponse
+import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

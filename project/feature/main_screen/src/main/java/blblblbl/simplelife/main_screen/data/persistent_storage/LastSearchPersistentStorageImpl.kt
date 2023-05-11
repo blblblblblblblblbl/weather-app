@@ -2,7 +2,7 @@ package blblblbl.simplelife.main_screen.data.persistent_storage
 
 import android.content.SharedPreferences
 import android.util.Log
-import blblblbl.simplelife.forecast.domain.model.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.main_screen.data.persistent_storage.utils.StorageConverter
 import blblblbl.simplelife.main_screen.di.LastSearchFeature
 import javax.inject.Inject

@@ -1,32 +1,35 @@
 package blblblbl.simplelife.forecast.data.utils
 
-import blblblbl.simplelife.forecast.data.model.Hour as DataHour
-import blblblbl.simplelife.forecast.domain.model.Hour as DomainHour
+import blblblbl.simplelife.forecast.data.model.forecast.Hour as DataHour
+import blblblbl.simplelife.forecast.domain.model.forecast.Hour as DomainHour
 
-import blblblbl.simplelife.forecast.data.model.Astro as DataAstro
-import blblblbl.simplelife.forecast.domain.model.Astro as DomainAstro
+import blblblbl.simplelife.forecast.data.model.forecast.Astro as DataAstro
+import blblblbl.simplelife.forecast.domain.model.forecast.Astro as DomainAstro
 
 
-import blblblbl.simplelife.forecast.data.model.Day as DataDay
-import blblblbl.simplelife.forecast.domain.model.Day as DomainDay
+import blblblbl.simplelife.forecast.data.model.forecast.Day as DataDay
+import blblblbl.simplelife.forecast.domain.model.forecast.Day as DomainDay
 
-import blblblbl.simplelife.forecast.data.model.Forecastday as DataForecastday
-import blblblbl.simplelife.forecast.domain.model.Forecastday as DomainForecastday
+import blblblbl.simplelife.forecast.data.model.forecast.Forecastday as DataForecastday
+import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday as DomainForecastday
 
-import blblblbl.simplelife.forecast.data.model.Forecast as DataForecast
-import blblblbl.simplelife.forecast.domain.model.Forecast as DomainForecast
+import blblblbl.simplelife.forecast.data.model.forecast.Forecast as DataForecast
+import blblblbl.simplelife.forecast.domain.model.forecast.Forecast as DomainForecast
 
-import blblblbl.simplelife.forecast.data.model.Condition as DataCondition
-import blblblbl.simplelife.forecast.domain.model.Condition as DomainCondition
+import blblblbl.simplelife.forecast.data.model.forecast.Condition as DataCondition
+import blblblbl.simplelife.forecast.domain.model.forecast.Condition as DomainCondition
 
-import blblblbl.simplelife.forecast.data.model.Current as DataCurrent
-import blblblbl.simplelife.forecast.domain.model.Current as DomainCurrent
+import blblblbl.simplelife.forecast.data.model.forecast.Current as DataCurrent
+import blblblbl.simplelife.forecast.domain.model.forecast.Current as DomainCurrent
 
-import blblblbl.simplelife.forecast.data.model.Location as DataLocation
-import blblblbl.simplelife.forecast.domain.model.Location as DomainLocation
+import blblblbl.simplelife.forecast.data.model.forecast.Location as DataLocation
+import blblblbl.simplelife.forecast.domain.model.forecast.Location as DomainLocation
 
-import blblblbl.simplelife.forecast.data.model.ForecastResponse as DataForecastResponse
-import blblblbl.simplelife.forecast.domain.model.ForecastResponse as DomainForecastResponse
+import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse as DataForecastResponse
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse as DomainForecastResponse
+
+import blblblbl.simplelife.forecast.data.model.location.Location as DataUserLocation
+import blblblbl.simplelife.forecast.domain.model.location.Location as DomainUserLocation
 
 //toDomain
 fun DataHour.mapToDomain(): DomainHour {
@@ -171,6 +174,13 @@ fun DataForecastResponse.mapToDomain(): DomainForecastResponse{
     return domainForecastResponse
 }
 
+fun DataUserLocation.mapToDomain():DomainUserLocation{
+    val domainUserLocation = DomainUserLocation(
+        latitude, longitude
+    )
+    return domainUserLocation
+}
+
 //toData
 
 fun DomainHour.mapToData(): DataHour {
@@ -313,4 +323,11 @@ fun DomainForecastResponse.mapToData(): DataForecastResponse{
         forecast?.mapToData()
     )
     return DataForecastResponse
+}
+
+fun DomainUserLocation.mapToData():DataUserLocation{
+    val dataUserLocation = DataUserLocation(
+        latitude, longitude
+    )
+    return dataUserLocation
 }
