@@ -8,19 +8,23 @@ import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.LastSearchUseCase
-import com.google.android.gms.location.CurrentLocationRequest
+import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
+import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenFragmentViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
+    private val settingsUseCase: GetAppConfigUseCase,
     private val lastSearchUseCase: LastSearchUseCase
 ):ViewModel() {
 
@@ -30,6 +34,10 @@ class MainScreenFragmentViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow<String>("")
     val searchQuery = _searchQuery.asStateFlow()
 
+    val settings = settingsUseCase.getAppConfigFlow()
+    init {
+        getLast()
+    }
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
@@ -53,21 +61,21 @@ class MainScreenFragmentViewModel @Inject constructor(
     fun getForecastByName(context:Context){
         searchForecast(_searchQuery.value,context)
     }
-    fun getForecastByLocationa(location:Location){
+    private fun getForecastByLocation(location:Location){
         viewModelScope.launch {
             val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
             _forecast.value = forecast
             lastSearchUseCase.saveLast(forecast)
         }
     }
-    fun getForecastByLocation(context:Context){
+    fun locationOnClick(context:Context){
         viewModelScope.launch {
             try {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                 val cancellation = CancellationTokenSource()
                 val locTask = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY ,cancellation.token)
                 locTask.addOnSuccessListener {location->
-                    getForecastByLocationa(Location(longitude = location.longitude, latitude = location.latitude))
+                    getForecastByLocation(Location(longitude = location.longitude, latitude = location.latitude))
                 }
             }
             catch (e:Throwable){

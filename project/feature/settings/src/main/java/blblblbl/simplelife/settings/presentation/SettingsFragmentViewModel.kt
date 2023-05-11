@@ -20,7 +20,7 @@ class SettingsFragmentViewModel @Inject constructor(
     val config = _config.asStateFlow()
     fun getConfig(){
         viewModelScope.launch {
-            val config = getAppConfigUseCase.execute()
+            val config = getAppConfigUseCase.getAppConfig()
             _config.value = config
         }
     }

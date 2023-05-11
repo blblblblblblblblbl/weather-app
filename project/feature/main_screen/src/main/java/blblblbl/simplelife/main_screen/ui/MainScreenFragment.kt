@@ -49,6 +49,7 @@ import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday
 import blblblbl.simplelife.forecast.domain.model.forecast.Hour
 import blblblbl.simplelife.main_screen.R
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
+import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.skydoves.landscapist.glide.GlideImage
@@ -60,7 +61,7 @@ fun MainScreenFragment() {
     val viewModel = hiltViewModel<MainScreenFragmentViewModel>()
     val forecast by viewModel.forecast.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    viewModel.getLast()
+    val appConfig by viewModel.settings.collectAsState()
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -112,7 +113,7 @@ fun MainScreenFragment() {
                                 Toast.makeText(context,"enable gps",Toast.LENGTH_SHORT).show()
                             }
                             else{
-                                viewModel.getForecastByLocation(context)
+                                viewModel.locationOnClick(context)
                             }
                         }
                         else{
@@ -122,21 +123,26 @@ fun MainScreenFragment() {
                         Icon(Icons.Default.MyLocation, contentDescription = "location button")
                     }
                 }
-                forecast?.let { forecast ->
-                    CurrentWeatherBlock(
-                        modifier = Modifier.fillMaxWidth(0.7f),
-                        forecast = forecast,
-                        refreshOnClick = {viewModel.refresh(context)}
-                    )
+                appConfig?.weatherConfig?.let { weatherConfig ->
+                    forecast?.let { forecast ->
+                        CurrentWeatherBlock(
+                            modifier = Modifier.fillMaxWidth(0.7f),
+                            forecast = forecast,
+                            refreshOnClick = {viewModel.refresh(context)},
+                            weatherConfig = weatherConfig
+                        )
+                    }
+                    forecast?.forecast?.let { nextDays ->
+                        NextDays(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            forecast = nextDays,
+                            weatherConfig =weatherConfig
+                        )
+                    }
                 }
-                forecast?.forecast?.let { nextDays ->
-                    NextDays(
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .fillMaxWidth(),
-                        forecast = nextDays
-                    )
-                }
+
             }
         }
     }
@@ -146,7 +152,8 @@ fun MainScreenFragment() {
 fun CurrentWeatherBlock(
     modifier: Modifier = Modifier,
     forecast: ForecastResponse,
-    refreshOnClick:()->Unit
+    refreshOnClick:()->Unit,
+    weatherConfig: WeatherConfig
 ) {
     Card(
         modifier = modifier
@@ -168,7 +175,7 @@ fun CurrentWeatherBlock(
                 }
                 forecast.current?.tempC?.let {
                     Text(
-                        text = "${it}°C",
+                        text = temepatureInUnits(it,weatherConfig.degreeUnit),
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
@@ -193,7 +200,7 @@ fun CurrentWeatherBlock(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = "wind")
-                    Text(text = "${windSpeed} km/h")
+                    Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit))
                 }
             }
             forecast.current?.humidity?.let { humidity ->
@@ -231,7 +238,8 @@ fun CurrentWeatherBlock(
 @Composable
 fun NextDays(
     modifier: Modifier = Modifier,
-    forecast: Forecast
+    forecast: Forecast,
+    weatherConfig: WeatherConfig
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -249,13 +257,14 @@ fun NextDays(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        DayHead(day = day)
+                        DayHead(day = day, weatherConfig = weatherConfig)
                     }
                 }
             ) {
                 DayExpanded(
                     modifier = Modifier.padding(10.dp),
-                    forecastday = day
+                    forecastday = day,
+                    weatherConfig = weatherConfig
                 )
             }
         }
@@ -264,7 +273,8 @@ fun NextDays(
 @Composable
 fun DayHead(
     modifier: Modifier = Modifier,
-    day: Forecastday
+    day: Forecastday,
+    weatherConfig:WeatherConfig
 ){
     Row(
         modifier = modifier
@@ -282,7 +292,7 @@ fun DayHead(
                 contentDescription = "temperature",
                 modifier = Modifier.requiredWidth(20.dp)
             )
-            Text(text = "${it}°C")
+            Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
         }
         day.day?.maxwindKph?.let { wind ->
             Icon(
@@ -290,7 +300,7 @@ fun DayHead(
                 contentDescription = "wind speed",
                 modifier = Modifier.requiredWidth(24.dp)
             )
-            Text(text = "${wind} km/h")
+            Text(text = speedInUnits(wind,weatherConfig.speedUnit))
         }
         day.day?.dailyChanceOfRain?.let { rain ->
             Icon(
@@ -306,7 +316,8 @@ fun DayHead(
 @Composable
 fun DayExpanded(
     modifier: Modifier = Modifier,
-    forecastday: Forecastday
+    forecastday: Forecastday,
+    weatherConfig: WeatherConfig
 ){
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -321,17 +332,18 @@ fun DayExpanded(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             forecastday.hour.forEach {hour->
-                HourCard(hour = hour)
+                HourCard(hour = hour, weatherConfig =weatherConfig )
             }
         }
-        DetailedDayInfo(forecastday = forecastday)
+        DetailedDayInfo(forecastday = forecastday, weatherConfig = weatherConfig)
     }
 }
 
 @Composable
 fun HourCard(
     modifier: Modifier = Modifier,
-    hour: Hour
+    hour: Hour,
+    weatherConfig: WeatherConfig
 ){
     Card(
         modifier = modifier
@@ -355,7 +367,7 @@ fun HourCard(
             }
             hour.tempC?.let {
                 Text(
-                    text = "${it}°C",
+                    text = temepatureInUnits(it,weatherConfig.degreeUnit),
                     style = MaterialTheme.typography.headlineLarge
                 )
             }
@@ -371,7 +383,7 @@ fun HourCard(
                     contentDescription = "wind speed",
                     modifier = Modifier.requiredHeight(24.dp)
                 )
-                Text(text = "${wind} km/h")
+                Text(text = speedInUnits(wind,weatherConfig.speedUnit))
             }
             hour.chanceOfRain?.let { rain ->
                 Icon(
@@ -388,7 +400,8 @@ fun HourCard(
 @Composable
 fun DetailedDayInfo(
     modifier: Modifier = Modifier,
-    forecastday: Forecastday
+    forecastday: Forecastday,
+    weatherConfig: WeatherConfig
 ){
     Column(
         modifier = modifier,
@@ -397,7 +410,8 @@ fun DetailedDayInfo(
         forecastday.day?.let { day->
             DayBlock(
                 modifier = Modifier.fillMaxWidth(),
-                day = day
+                day = day,
+                weatherConfig = weatherConfig
             )
         }
         forecastday.astro?.let {
@@ -412,7 +426,8 @@ fun DetailedDayInfo(
 @Composable
 fun DayBlock(
     modifier: Modifier = Modifier,
-    day: Day
+    day: Day,
+    weatherConfig: WeatherConfig
 ){
     Surface(
         modifier = modifier,
@@ -444,14 +459,16 @@ fun DayBlock(
                     }
                     day?.avgtempC?.let {
                         Text(
-                            text = "${it}°C",
+                            text = temepatureInUnits(it,weatherConfig.degreeUnit),
                             style = MaterialTheme.typography.headlineLarge
                         )
                     }
                     val minTemp = day?.mintempC
                     val maxTemp = day?.maxtempC
                     if (minTemp!=null&&maxTemp!=null){
-                        Text(text = "${minTemp}...${maxTemp}°C")
+                        val minString = temepatureInUnits(minTemp,weatherConfig.degreeUnit)
+                        val maxString = temepatureInUnits(maxTemp,weatherConfig.degreeUnit)
+                        Text(text = "${minString.subSequence(0,minString.lastIndex-1)}...${maxString}")
                     }
                 }
                 Column(
@@ -463,7 +480,7 @@ fun DayBlock(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(text = "max wind    ")
-                            Text(text = "${it} kmh")
+                            Text(text = speedInUnits(it,weatherConfig.speedUnit))
                         }
                     }
                     day?.avghumidity?.let {
