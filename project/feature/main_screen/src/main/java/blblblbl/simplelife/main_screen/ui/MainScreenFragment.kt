@@ -35,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import blblblbl.simplelife.forecast.domain.model.Astro
+import blblblbl.simplelife.forecast.domain.model.Day
 import blblblbl.simplelife.forecast.domain.model.Forecast
 import blblblbl.simplelife.forecast.domain.model.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.Forecastday
@@ -244,7 +246,7 @@ fun DayHead(
             )
             Text(text = "${it}°C")
         }
-        day.day?.avgvisKm?.let { wind ->
+        day.day?.maxwindKph?.let { wind ->
             Icon(
                 painter = painterResource(id = R.drawable.wind_icon),
                 contentDescription = "wind speed",
@@ -350,6 +352,30 @@ fun DetailedDayInfo(
     modifier: Modifier = Modifier,
     forecastday: Forecastday
 ){
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        forecastday.day?.let { day->
+            DayBlock(
+                modifier = Modifier.fillMaxWidth(),
+                day = day
+            )
+        }
+        forecastday.astro?.let {
+            AstroBlock(
+                modifier = Modifier.fillMaxWidth(),
+                astro = it
+            )
+        }
+    }
+
+}
+@Composable
+fun DayBlock(
+    modifier: Modifier = Modifier,
+    day: Day
+){
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.large
@@ -369,23 +395,23 @@ fun DetailedDayInfo(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    forecastday.day?.condition?.icon?.let {
+                    day?.condition?.icon?.let {
                         GlideImage(
                             imageModel = { "https:" + it },
                             modifier = Modifier.size(64.dp)
                         )
                     }
-                    forecastday.day?.condition?.text?.let{
+                    day?.condition?.text?.let{
                         Text(text = it, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp))
                     }
-                    forecastday.day?.avgtempC?.let {
+                    day?.avgtempC?.let {
                         Text(
                             text = "${it}°C",
                             style = MaterialTheme.typography.headlineLarge
                         )
                     }
-                    val minTemp = forecastday.day?.mintempC
-                    val maxTemp = forecastday.day?.maxtempC
+                    val minTemp = day?.mintempC
+                    val maxTemp = day?.maxtempC
                     if (minTemp!=null&&maxTemp!=null){
                         Text(text = "${minTemp}...${maxTemp}°C")
                     }
@@ -394,7 +420,7 @@ fun DetailedDayInfo(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    forecastday.day?.maxwindKph?.let { 
+                    day?.maxwindKph?.let {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -402,7 +428,7 @@ fun DetailedDayInfo(
                             Text(text = "${it} kmh")
                         }
                     }
-                    forecastday.day?.avghumidity?.let { 
+                    day?.avghumidity?.let {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -410,7 +436,7 @@ fun DetailedDayInfo(
                             Text(text = "${it}")
                         }
                     }
-                    forecastday.day?.uv?.let {
+                    day?.uv?.let {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -421,5 +447,87 @@ fun DetailedDayInfo(
                 }
             }
         }
+    }
+}
+@Composable
+fun AstroBlock(
+    modifier: Modifier = Modifier,
+    astro: Astro
+){
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large
+    ) {
+       Row(
+           horizontalArrangement = Arrangement.SpaceAround
+       ) {
+           Column() {
+               val sunrise = astro.sunrise
+               val sunset = astro.sunset
+               if (sunrise!=null &&sunset!=null){
+                   Row(
+                       verticalAlignment = Alignment.CenterVertically,
+                       horizontalArrangement = Arrangement.spacedBy(4.dp)
+                   ) {
+                       val iconSize = 48.dp
+                       val textSize = 12.sp
+                       Column(
+                           horizontalAlignment = Alignment.CenterHorizontally
+                       ) {
+                           Icon(painterResource(id = R.drawable.sunrise), contentDescription = "sunrise", modifier = Modifier.size(iconSize))
+                           Text(text = sunrise, style = MaterialTheme.typography.bodySmall.copy(fontSize = textSize) )
+                       }
+                       Column(
+                           horizontalAlignment = Alignment.CenterHorizontally
+                       ) {
+                           Icon(painterResource(id = R.drawable.sunset), contentDescription = "sunset", modifier = Modifier.size(iconSize))
+                           Text(text = sunset, style = MaterialTheme.typography.bodySmall.copy(fontSize = textSize))
+                       }
+                   }
+               }
+               val moonrise = astro.moonrise
+               val moonset = astro.moonset
+               if (moonrise!=null &&moonset!=null){
+                   Row(
+                       verticalAlignment = Alignment.CenterVertically,
+                       horizontalArrangement = Arrangement.spacedBy(4.dp)
+                   ) {
+                       val iconSize = 48.dp
+                       val textSize = 12.sp
+                       Column(
+                           horizontalAlignment = Alignment.CenterHorizontally
+                       ) {
+                           Icon(painterResource(id = R.drawable.moonrise), contentDescription = "moonrise", modifier = Modifier.size(iconSize))
+                           Text(text = moonrise, style = MaterialTheme.typography.bodySmall.copy(fontSize = textSize))
+                       }
+                       Column(
+                           horizontalAlignment = Alignment.CenterHorizontally
+                       ) {
+                           Icon(painterResource(id = R.drawable.moonset), contentDescription = "moonset", modifier = Modifier.size(iconSize))
+                           Text(text = moonset, style = MaterialTheme.typography.bodySmall.copy(fontSize = textSize))
+                       }
+                   }
+               }
+           }
+           Column(horizontalAlignment = Alignment.CenterHorizontally) {
+               astro.moonPhase?.let { moonPhase->
+                   Text(text = moonPhase)
+                   val iconSize = 64.dp
+                   when(moonPhase){
+                       "New Moon"-> Icon(painterResource(id = R.drawable.new_moon), contentDescription = "New Moon", modifier = Modifier.size(iconSize))
+                       "Waxing Crescent"-> Icon(painterResource(id = R.drawable.waning_crescent), contentDescription = "Waxing Crescent", modifier = Modifier.size(iconSize))
+                       "First Quarter"-> Icon(painterResource(id = R.drawable.first_quarter), contentDescription = "First Quarter", modifier = Modifier.size(iconSize))
+                       "Waxing Gibbous"-> Icon(painterResource(id = R.drawable.waxing_gibbous), contentDescription = "Waxing Gibbous", modifier = Modifier.size(iconSize))
+                       "Full Moon"-> Icon(painterResource(id = R.drawable.full_moon), contentDescription = "Full Moon", modifier = Modifier.size(iconSize))
+                       "Waning Gibbous"-> Icon(painterResource(id = R.drawable.waning_gibbous), contentDescription = "Waning Gibbous", modifier = Modifier.size(iconSize))
+                       "Last Quarter"-> Icon(painterResource(id = R.drawable.last_quarter), contentDescription = "Last Quarter", modifier = Modifier.size(iconSize))
+                       "Waning Crescent"-> Icon(painterResource(id = R.drawable.waning_crescent), contentDescription = "Waning Crescent", modifier = Modifier.size(iconSize))
+                   }
+               }
+               astro.moonIllumination?.let {
+                   Text(text = "illumination  ${it}%")
+               }
+           }
+       }
     }
 }
