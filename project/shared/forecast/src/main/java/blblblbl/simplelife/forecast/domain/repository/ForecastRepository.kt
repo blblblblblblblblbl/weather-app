@@ -1,6 +1,7 @@
 package blblblbl.simplelife.forecast.domain.repository
 
-import blblblbl.simplelife.forecast.domain.model.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.location.Location
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 
 
 interface ForecastRepository {
@@ -11,6 +12,12 @@ interface ForecastRepository {
         alerts: String
     ): ForecastResponse
 
+    suspend fun getForecastByLoc(
+        loc: Location,
+        days: Int,
+        aqi: String,
+        alerts: String
+    ): ForecastResponse
     suspend fun getCurrent(
         query: String,
         aqi: String
