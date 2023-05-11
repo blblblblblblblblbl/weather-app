@@ -10,6 +10,7 @@ import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.LastSearchUseCase
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,8 +65,7 @@ class MainScreenFragmentViewModel @Inject constructor(
             try {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                 val cancellation = CancellationTokenSource()
-                val locRequest = CurrentLocationRequest.Builder().build()
-                val locTask = fusedLocationClient.getCurrentLocation(locRequest,cancellation.token)
+                val locTask = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY ,cancellation.token)
                 locTask.addOnSuccessListener {location->
                     getForecastByLocationa(Location(longitude = location.longitude, latitude = location.latitude))
                 }
