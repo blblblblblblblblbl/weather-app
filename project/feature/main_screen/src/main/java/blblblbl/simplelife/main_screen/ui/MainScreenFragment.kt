@@ -53,6 +53,7 @@ fun MainScreenFragment() {
     val viewModel = hiltViewModel<MainScreenFragmentViewModel>()
     val forecast by viewModel.forecast.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    viewModel.getLast()
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
