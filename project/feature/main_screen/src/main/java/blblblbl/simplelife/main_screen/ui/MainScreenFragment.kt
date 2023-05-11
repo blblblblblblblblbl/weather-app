@@ -1,5 +1,9 @@
 package blblblbl.simplelife.main_screen.ui
 
+import android.Manifest
+import android.content.Context
+import android.location.LocationManager
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.location.LocationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import blblblbl.simplelife.forecast.domain.model.forecast.Astro
 import blblblbl.simplelife.forecast.domain.model.forecast.Day
@@ -44,10 +49,12 @@ import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday
 import blblblbl.simplelife.forecast.domain.model.forecast.Hour
 import blblblbl.simplelife.main_screen.R
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.skydoves.landscapist.glide.GlideImage
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreenFragment() {
     val viewModel = hiltViewModel<MainScreenFragmentViewModel>()
@@ -91,7 +98,27 @@ fun MainScreenFragment() {
                         .padding(horizontal = 24.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    IconButton(onClick = { viewModel.getForecastByLocation(context) }) {
+                    val locationPermissionState = rememberMultiplePermissionsState(
+                        permissions = listOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                    )
+                    IconButton(onClick = {
+                        if (locationPermissionState.allPermissionsGranted){
+                            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                            val isLocEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
+                            if (!isLocEnabled) {
+                                Toast.makeText(context,"enable gps",Toast.LENGTH_SHORT).show()
+                            }
+                            else{
+                                viewModel.getForecastByLocation(context)
+                            }
+                        }
+                        else{
+                            locationPermissionState.launchMultiplePermissionRequest()
+                        }
+                    }) {
                         Icon(Icons.Default.MyLocation, contentDescription = "location button")
                     }
                 }

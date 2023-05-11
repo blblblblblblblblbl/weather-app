@@ -22,7 +22,7 @@ class ForecastDataSourceImpl @Inject constructor(
         aqi: String,
         alerts: String
     ): ForecastResponse {
-        val query = "${loc.longitude},${loc.latitude}"
+        val query = "${loc.latitude},${loc.longitude}"
         return forecastApi.getForecast(query,days,aqi, alerts)
     }
 
