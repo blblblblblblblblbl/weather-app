@@ -34,10 +34,10 @@ class MainScreenFragmentViewModel @Inject constructor(
             _forecast.value = lastSearchUseCase.getLast()
         }
     }
-    fun getForecast(context:Context){
+    private fun searchForecast(query: String, context: Context){
         viewModelScope.launch {
             try {
-                val forecast = getForecastUseCase.execute(_searchQuery.value,7,"no","no")
+                val forecast = getForecastUseCase.execute(query,7,"no","no")
                 _forecast.value = forecast
                 lastSearchUseCase.saveLast(forecast)
             }
@@ -45,5 +45,11 @@ class MainScreenFragmentViewModel @Inject constructor(
                 Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    fun getForecast(context:Context){
+        searchForecast(_searchQuery.value,context)
+    }
+    fun refresh(context:Context){
+        _forecast.value?.location?.name?.let { searchForecast(it,context) }
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -98,7 +99,8 @@ fun MainScreenFragment() {
                 forecast?.let { forecast ->
                     CurrentWeatherBlock(
                         modifier = Modifier.fillMaxWidth(0.7f),
-                        forecast = forecast
+                        forecast = forecast,
+                        refreshOnClick = {viewModel.refresh(context)}
                     )
                 }
                 forecast?.forecast?.let { nextDays ->
@@ -117,7 +119,8 @@ fun MainScreenFragment() {
 @Composable
 fun CurrentWeatherBlock(
     modifier: Modifier = Modifier,
-    forecast: ForecastResponse
+    forecast: ForecastResponse,
+    refreshOnClick:()->Unit
 ) {
     Card(
         modifier = modifier
@@ -178,12 +181,20 @@ fun CurrentWeatherBlock(
                 }
             }
             forecast.current?.lastUpdated?.let { lastUpdated ->
-                Column(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Text(text = "last updated")
-                    Text(text = lastUpdated)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "last updated")
+                        Text(text = lastUpdated)
+                    }
+                    IconButton(onClick = { refreshOnClick() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "refresh")
+                    }
                 }
             }
         }
