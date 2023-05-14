@@ -15,7 +15,7 @@ import dagger.hilt.components.SingletonComponent
 class MainDBModule{
 
     @Provides
-    fun provideSearchDB(dbCreator: DataBaseCreator): CityDataBase =
+    fun provideCityDB(dbCreator: DataBaseCreator): CityDataBase =
         object :CityDataBase{
             override suspend fun saveForecast(forecastResponse: ForecastResponse) {
                 forecastResponse.location?.name?.let { name->

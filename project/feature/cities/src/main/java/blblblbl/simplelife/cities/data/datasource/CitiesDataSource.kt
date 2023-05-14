@@ -1,10 +1,9 @@
-package blblblbl.simplelife.cities.domain.repository
+package blblblbl.simplelife.cities.data.datasource
 
 import androidx.paging.PagingData
-import blblblbl.simplelife.cities.domain.model.ForecastResponse
+import blblblbl.simplelife.cities.data.model.ForecastResponse
 import kotlinx.coroutines.flow.Flow
 
-interface CitiesRepository {
-
+interface CitiesDataSource {
     fun getCitiesPagingDataFlow(pageSize:Int): Flow<PagingData<ForecastResponse>>
 }

@@ -14,13 +14,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import blblblbl.simplelife.cities.ui.CitiesFragment
 import blblblbl.simplelife.weather.navigation.CitiesDest
 import java.time.LocalDate
 
 fun NavGraphBuilder.citiesGraph(navController: NavController){
     navigation(startDestination = CitiesDest.route, route = "CitiesNested") {
         composable(route = CitiesDest.route) {
-            Surface(modifier = Modifier.fillMaxSize()) {
+            /*Surface(modifier = Modifier.fillMaxSize()) {
                 Box() {
                     val city = "city"
                     Button(
@@ -30,7 +31,8 @@ fun NavGraphBuilder.citiesGraph(navController: NavController){
                     }
                 }
 
-            }
+            }*/
+            CitiesFragment()
         }
         composable(
             route =  "${CitiesNavGraph.DETAILED_CITY_ROUTE}/{${CitiesNavGraph.DETAILED_CITY_KEY}}",

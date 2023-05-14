@@ -57,6 +57,7 @@ dependencies {
 
     implementation project(path: ':feature:settings')
     implementation project(path: ':feature:main_screen')
+    implementation project(path: ':feature:cities')
     implementation project(path: ':shared:forecast')
     implementation project(path: ':shared:database')
 
