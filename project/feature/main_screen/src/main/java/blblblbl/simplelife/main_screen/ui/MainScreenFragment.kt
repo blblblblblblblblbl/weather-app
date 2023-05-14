@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -65,6 +66,7 @@ fun MainScreenFragment() {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val appConfig by viewModel.settings.collectAsState()
     val loadState by viewModel.loadState.collectAsState()
+    val isInFavourites by viewModel.isInFavourites.collectAsState()
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -134,6 +136,20 @@ fun MainScreenFragment() {
                             refreshOnClick = {viewModel.refresh(context)},
                             weatherConfig = weatherConfig
                         )
+                    }
+                    if (!isInFavourites){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            IconButton(onClick = {
+                                viewModel.saveForecastToFavourites()
+                            }) {
+                                Icon(Icons.Default.Favorite, contentDescription = "location button")
+                            }
+                        }
                     }
                     forecast?.forecast?.let { nextDays ->
                         NextDays(

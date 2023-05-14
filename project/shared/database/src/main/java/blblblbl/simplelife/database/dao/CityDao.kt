@@ -10,8 +10,8 @@ import blblblbl.simplelife.database.model.ForecastResponse
 
 @Dao
 interface CityDao {
-    @Query("SELECT forecast FROM CityTable")
-    suspend fun getCitiesForecastPagingSource(): PagingSource<Int,ForecastResponse>
+    //@Query("SELECT forecast FROM CityTable")
+    //suspend fun getCitiesForecastPagingSource(): PagingSource<Int,ForecastResponse>
 
     @Query("SELECT forecast FROM CityTable WHERE name LIKE :name")
     suspend fun getCityForecast(name:String):ForecastResponse?
