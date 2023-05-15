@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CitiesDataSource {
     fun getCitiesPagingDataFlow(pageSize:Int): Flow<PagingData<ForecastResponse>>
+
+    suspend fun removeCity(name: String)
 }

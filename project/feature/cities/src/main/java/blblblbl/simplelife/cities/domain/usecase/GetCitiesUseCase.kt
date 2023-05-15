@@ -11,4 +11,7 @@ class GetCitiesUseCase @Inject constructor(
 ) {
     fun execute(pageSize:Int): Flow<PagingData<ForecastResponse>> =
         repository.getCitiesPagingDataFlow(pageSize)
+
+    suspend fun removeCity(name: String) =
+        repository.removeCity(name)
 }

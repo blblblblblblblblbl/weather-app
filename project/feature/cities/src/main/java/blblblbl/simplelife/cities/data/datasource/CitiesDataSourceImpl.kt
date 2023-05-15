@@ -11,4 +11,7 @@ class CitiesDataSourceImpl @Inject constructor(
 ):CitiesDataSource {
     override fun getCitiesPagingDataFlow(pageSize: Int): Flow<PagingData<ForecastResponse>> =
         citiesDatabase.getCitiesPagingDataFlow(pageSize)
+
+    override suspend fun removeCity(name: String) =
+        citiesDatabase.removeCity(name)
 }

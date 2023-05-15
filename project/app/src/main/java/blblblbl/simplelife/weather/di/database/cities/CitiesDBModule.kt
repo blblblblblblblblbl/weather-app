@@ -29,5 +29,8 @@ class CitiesDBModule {
                 ).flow.map {pagingData->
                     pagingData.map { it.forecast.mapToCities()}
                 }
+
+            override suspend fun removeCity(name: String) =
+                dbCreator.getDB().cityDao().deleteCity(name)
         }
 }

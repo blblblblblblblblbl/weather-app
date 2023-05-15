@@ -19,4 +19,7 @@ class CitiesRepositoryImpl @Inject constructor(
                 forecastResponse.mapToDomain()
             }
         }
+
+    override suspend fun removeCity(name: String) =
+        citiesDataSource.removeCity(name)
 }
