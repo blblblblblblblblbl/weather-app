@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
+import blblblbl.simplelife.main_screen.domain.usecase.DataBaseUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.LastSearchUseCase
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
@@ -14,6 +15,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,13 +23,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenFragmentViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
     private val settingsUseCase: GetAppConfigUseCase,
-    private val lastSearchUseCase: LastSearchUseCase
+    private val lastSearchUseCase: LastSearchUseCase,
+    private val dataBaseUseCase: DataBaseUseCase
 ):ViewModel() {
 
     private val _forecast = MutableStateFlow<ForecastResponse?>(null)
@@ -41,6 +45,9 @@ class MainScreenFragmentViewModel @Inject constructor(
     private val _loadState = MutableStateFlow<LoadingState>(LoadingState.LOADED)
     val loadState = _loadState.asStateFlow()
 
+    private val _isInFavourites = MutableStateFlow<Boolean>(true)
+    val isInFavourites = _isInFavourites.asStateFlow()
+
     var currentRequest :Job? = null
 
     init {
@@ -52,13 +59,27 @@ class MainScreenFragmentViewModel @Inject constructor(
     fun getLast(){
         viewModelScope.launch {
             _forecast.value = lastSearchUseCase.getLast()
+            withContext(Dispatchers.IO){
+                _forecast.value?.location?.name?.let { name->
+                    _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+                }
+            }
         }
     }
+    fun saveForecastToFavourites(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _forecast.value?.let { forecast ->
+                dataBaseUseCase.saveForecast(forecast)
+                _isInFavourites.value = true
+            }
+        }
+    }
+
     private fun searchForecast(query: String, context: Context){
         _loadState.value = LoadingState.LOADING
         currentRequest?.cancel()
         currentRequest = viewModelScope.launch {
-            val job = viewModelScope.launch {
+            /*var job = viewModelScope.launch {
                 try {
                     val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
                     _forecast.value = forecast
@@ -69,6 +90,29 @@ class MainScreenFragmentViewModel @Inject constructor(
                 }
             }
             job.join()
+            job = viewModelScope.launch(Dispatchers.IO){
+                _forecast.value?.location?.name?.let { name->
+                    dataBaseUseCase.isCityInFavourites(name)
+                }
+            }
+            job.join()*/
+            try {
+                val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
+                _forecast.value = forecast
+                _isInFavourites.value = false
+                lastSearchUseCase.saveLast(forecast)
+            }
+            catch (e:Throwable){
+                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+            }
+            withContext(Dispatchers.IO){
+                _forecast.value?.location?.name?.let { name->
+                    _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+                }
+            }
+            if (_isInFavourites.value){
+                _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
+            }
             currentRequest = null
             _loadState.value = LoadingState.LOADED
         }
@@ -83,9 +127,18 @@ class MainScreenFragmentViewModel @Inject constructor(
                 _loadState.value = LoadingState.LOADING
                 val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
                 _forecast.value = forecast
+                _isInFavourites.value = false
                 lastSearchUseCase.saveLast(forecast)
             }
             job.join()
+            withContext(Dispatchers.IO){
+                _forecast.value?.location?.name?.let { name->
+                    _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+                }
+            }
+            if (_isInFavourites.value){
+                _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
+            }
             currentRequest = null
             _loadState.value = LoadingState.LOADED
         }

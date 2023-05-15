@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.location.LocationManagerCompat
@@ -65,6 +67,7 @@ fun MainScreenFragment() {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val appConfig by viewModel.settings.collectAsState()
     val loadState by viewModel.loadState.collectAsState()
+    val isInFavourites by viewModel.isInFavourites.collectAsState()
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -135,6 +138,20 @@ fun MainScreenFragment() {
                             weatherConfig = weatherConfig
                         )
                     }
+                    if (!isInFavourites){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            IconButton(onClick = {
+                                viewModel.saveForecastToFavourites()
+                            }) {
+                                Icon(Icons.Default.Favorite, contentDescription = "location button")
+                            }
+                        }
+                    }
                     forecast?.forecast?.let { nextDays ->
                         NextDays(
                             modifier = Modifier
@@ -183,7 +200,8 @@ fun CurrentWeatherBlock(
                 forecast.location?.name?.let {
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.headlineLarge
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center
                     )
                 }
                 forecast.current?.tempC?.let {
