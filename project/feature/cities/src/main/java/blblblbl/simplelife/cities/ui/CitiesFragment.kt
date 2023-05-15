@@ -3,6 +3,7 @@ package blblblbl.simplelife.cities.ui
 import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -11,7 +12,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -43,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,17 +53,20 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import blblblbl.simplelife.cities.R
-import blblblbl.simplelife.cities.domain.model.ForecastResponse
 import blblblbl.simplelife.cities.presentation.CitiesFragmentViewModel
+import blblblbl.simplelife.cities.presentation.LoadingState
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @Composable
 fun CitiesFragment() {
     val viewModel = hiltViewModel<CitiesFragmentViewModel>()
     val appConfig by viewModel.settings.collectAsState()
+    val context = LocalContext.current
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -73,6 +78,9 @@ fun CitiesFragment() {
                 cities = viewModel.pagedCities,
                 weatherConfig = weatherConfig,
                 cityOnClick = {},
+                refreshOnClick = {name,loadStateChangeFun->
+                    viewModel.refreshCity(context, name, loadStateChangeFun)
+                },
                 removeOnClick = { name ->
                     viewModel.removeCity(name)
                 }
@@ -89,6 +97,10 @@ fun CitiesGrid(
     cities: Flow<PagingData<ForecastResponse>>,
     weatherConfig: WeatherConfig,
     cityOnClick: () -> Unit,
+    refreshOnClick: (
+        String,
+        (LoadingState)->Unit
+    ) -> Unit,
     removeOnClick: (String) -> Unit
 ) {
     val lazyCitiesItems: LazyPagingItems<ForecastResponse> = cities.collectAsLazyPagingItems()
@@ -106,7 +118,7 @@ fun CitiesGrid(
                     forecast = item,
                     weatherConfig = weatherConfig,
                     onClick = { cityOnClick() },
-                    refreshOnClick = {},
+                    refreshOnClick = refreshOnClick,
                     removeOnClick = removeOnClick
                 )
             }
@@ -148,84 +160,105 @@ fun CityElement(
     forecast: ForecastResponse,
     weatherConfig: WeatherConfig,
     onClick: () -> Unit,
-    refreshOnClick: () -> Unit,
+    refreshOnClick: (
+        String,
+        (LoadingState)->Unit
+            ) -> Unit,
     removeOnClick: (String) -> Unit
 ) {
+    Log.d("MyLog", Random.nextInt(10).toString())
     var expandMenu by remember { mutableStateOf(false) }
+    var loadState by remember { mutableStateOf(LoadingState.LOADED) }
     Card(
         modifier = modifier.combinedClickable(
             onClick = { onClick() },
             onLongClick = { expandMenu = true }
         )
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            forecast.location?.name?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
+        Box(modifier = Modifier){
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                forecast.current?.tempC?.let {
-                    Text(temepatureInUnits(it,weatherConfig.degreeUnit), style = MaterialTheme.typography.headlineLarge)
-                }
-                forecast.current?.condition?.icon?.let {
-                    GlideImage(
-                        imageModel = { "https:" + it },
-                        modifier = Modifier.size(64.dp)
+                forecast.location?.name?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center
                     )
                 }
-            }
-            forecast.current?.condition?.text?.let {
-                Text(it)
-            }
-            forecast.current?.windKph?.let { windSpeed ->
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.wind_icon),
-                        contentDescription = "wind"
-                    )
-                    Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit))
-                }
-            }
-            forecast.current?.lastUpdated?.let { lastUpdated ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "last updated", style = MaterialTheme.typography.bodyMedium)
-                        Text(text = lastUpdated, style = MaterialTheme.typography.bodyMedium)
+                    forecast.current?.tempC?.let {
+                        Text(temepatureInUnits(it,weatherConfig.degreeUnit), style = MaterialTheme.typography.headlineLarge)
                     }
-                    IconButton(onClick = { refreshOnClick() }) {
-                        Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = "refresh",
-                            modifier = Modifier.size(48.dp)
+                    forecast.current?.condition?.icon?.let {
+                        GlideImage(
+                            imageModel = { "https:" + it },
+                            modifier = Modifier.size(64.dp)
                         )
                     }
                 }
+                forecast.current?.condition?.text?.let {
+                    Text(it)
+                }
+                forecast.current?.windKph?.let { windSpeed ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.wind_icon),
+                            contentDescription = "wind"
+                        )
+                        Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit))
+                    }
+                }
+                forecast.current?.lastUpdated?.let { lastUpdated ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "last updated", style = MaterialTheme.typography.bodyMedium)
+                            Text(text = lastUpdated, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        IconButton(onClick = {
+                            forecast.location?.name?.let { name->
+                                refreshOnClick(
+                                    name,
+                                    {loadState = it }
+                                )
+                            }
+                        }) {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = "refresh",
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                    }
+                }
+            }
+            if (loadState == LoadingState.LOADING){
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
+
         forecast.location?.name?.let { name ->
             DropdownMenu(expanded = expandMenu, onDismissRequest = { expandMenu = false }) {
                 DropdownMenuItem(
@@ -265,7 +298,7 @@ private data class PagingPlaceholderKey(private val index: Int) : Parcelable {
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-public fun <T : Any> LazyStaggeredGridScope.items(
+fun <T : Any> LazyStaggeredGridScope.items(
     items: LazyPagingItems<T>,
     key: ((item: T) -> Any)? = null,
     itemContent: @Composable LazyStaggeredGridScope.(value: T?) -> Unit

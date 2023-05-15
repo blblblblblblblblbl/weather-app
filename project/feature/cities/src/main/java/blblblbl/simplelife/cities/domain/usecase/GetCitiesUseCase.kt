@@ -1,8 +1,8 @@
 package blblblbl.simplelife.cities.domain.usecase
 
 import androidx.paging.PagingData
-import blblblbl.simplelife.cities.domain.model.ForecastResponse
 import blblblbl.simplelife.cities.domain.repository.CitiesRepository
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

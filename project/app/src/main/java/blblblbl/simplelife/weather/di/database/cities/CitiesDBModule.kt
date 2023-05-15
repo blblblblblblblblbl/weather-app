@@ -5,7 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import blblblbl.simplelife.cities.data.database.CitiesDatabase
-import blblblbl.simplelife.cities.data.model.ForecastResponse
+import blblblbl.simplelife.database.model.CityWeatherEntity
+import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse
 import blblblbl.simplelife.weather.di.database.DataBaseCreator
 import dagger.Module
 import dagger.Provides
@@ -32,5 +33,15 @@ class CitiesDBModule {
 
             override suspend fun removeCity(name: String) =
                 dbCreator.getDB().cityDao().deleteCity(name)
+
+            override suspend fun saveForecast(forecastResponse: ForecastResponse) {
+                forecastResponse.location?.name?.let { name->
+                    val entity = CityWeatherEntity(
+                        name = name,
+                        forecast = forecastResponse.mapToDB()
+                    )
+                    dbCreator.getDB().cityDao().update(entity)
+                }
+            }
         }
 }

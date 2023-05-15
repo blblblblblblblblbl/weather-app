@@ -1,32 +1,32 @@
 package blblblbl.simplelife.weather.di.database.cities
 
 import blblblbl.simplelife.database.model.Hour as DBHour
-import blblblbl.simplelife.cities.data.model.Hour as CitiesHour
+import blblblbl.simplelife.forecast.data.model.forecast.Hour as CitiesHour
 
 import blblblbl.simplelife.database.model.Astro as DBAstro
-import blblblbl.simplelife.cities.data.model.Astro as CitiesAstro
+import blblblbl.simplelife.forecast.data.model.forecast.Astro as CitiesAstro
 
 
 import blblblbl.simplelife.database.model.Day as DBDay
-import blblblbl.simplelife.cities.data.model.Day as CitiesDay
+import blblblbl.simplelife.forecast.data.model.forecast.Day as CitiesDay
 
 import blblblbl.simplelife.database.model.Forecastday as DBForecastday
-import blblblbl.simplelife.cities.data.model.Forecastday as CitiesForecastday
+import blblblbl.simplelife.forecast.data.model.forecast.Forecastday as CitiesForecastday
 
 import blblblbl.simplelife.database.model.Forecast as DBForecast
-import blblblbl.simplelife.cities.data.model.Forecast as CitiesForecast
+import blblblbl.simplelife.forecast.data.model.forecast.Forecast as CitiesForecast
 
 import blblblbl.simplelife.database.model.Condition as DBCondition
-import blblblbl.simplelife.cities.data.model.Condition as CitiesCondition
+import blblblbl.simplelife.forecast.data.model.forecast.Condition as CitiesCondition
 
 import blblblbl.simplelife.database.model.Current as DBCurrent
-import blblblbl.simplelife.cities.data.model.Current as CitiesCurrent
+import blblblbl.simplelife.forecast.data.model.forecast.Current as CitiesCurrent
 
 import blblblbl.simplelife.database.model.Location as DBLocation
-import blblblbl.simplelife.cities.data.model.Location as CitiesLocation
+import blblblbl.simplelife.forecast.data.model.forecast.Location as CitiesLocation
 
 import blblblbl.simplelife.database.model.ForecastResponse as DBForecastResponse
-import blblblbl.simplelife.cities.data.model.ForecastResponse as CitiesForecastResponse
+import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse as CitiesForecastResponse
 
 
 //toCities
