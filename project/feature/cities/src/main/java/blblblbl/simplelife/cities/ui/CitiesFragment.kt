@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import blblblbl.simplelife.cities.R
 import blblblbl.simplelife.cities.domain.model.ForecastResponse
 import blblblbl.simplelife.cities.presentation.CitiesFragmentViewModel
+import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -59,19 +61,24 @@ import kotlinx.coroutines.launch
 @Composable
 fun CitiesFragment() {
     val viewModel = hiltViewModel<CitiesFragmentViewModel>()
+    val appConfig by viewModel.settings.collectAsState()
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
-        CitiesGrid(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            cities = viewModel.pagedCities,
-            cityOnClick = {},
-            removeOnClick = {name->
-                viewModel.removeCity(name)
-            }
-        )
+        appConfig?.weatherConfig?.let { weatherConfig ->
+            CitiesGrid(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                cities = viewModel.pagedCities,
+                weatherConfig = weatherConfig,
+                cityOnClick = {},
+                removeOnClick = { name ->
+                    viewModel.removeCity(name)
+                }
+            )
+        }
+
     }
 }
 
@@ -80,6 +87,7 @@ fun CitiesFragment() {
 fun CitiesGrid(
     modifier: Modifier = Modifier,
     cities: Flow<PagingData<ForecastResponse>>,
+    weatherConfig: WeatherConfig,
     cityOnClick: () -> Unit,
     removeOnClick: (String) -> Unit
 ) {
@@ -93,7 +101,15 @@ fun CitiesGrid(
         modifier = modifier
     ) {
         items(lazyCitiesItems) { item ->
-            item?.let { CityElement(forecast = item, onClick = { cityOnClick() }, refreshOnClick = {}, removeOnClick = removeOnClick) }
+            item?.let {
+                CityElement(
+                    forecast = item,
+                    weatherConfig = weatherConfig,
+                    onClick = { cityOnClick() },
+                    refreshOnClick = {},
+                    removeOnClick = removeOnClick
+                )
+            }
         }
     }
     val showButton by remember {
@@ -101,10 +117,10 @@ fun CitiesGrid(
             listStaggeredState.firstVisibleItemIndex > 0
         }
     }
-    AnimatedVisibility (
+    AnimatedVisibility(
         showButton,
-        enter = slideInHorizontally( initialOffsetX = {fullWidth -> fullWidth }),
-        exit = slideOutHorizontally( targetOffsetX = {fullWidth -> fullWidth })
+        enter = slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }),
+        exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
     ) {
         Box(Modifier.fillMaxSize()) {
             val coroutineScope = rememberCoroutineScope()
@@ -130,6 +146,7 @@ fun CitiesGrid(
 fun CityElement(
     modifier: Modifier = Modifier,
     forecast: ForecastResponse,
+    weatherConfig: WeatherConfig,
     onClick: () -> Unit,
     refreshOnClick: () -> Unit,
     removeOnClick: (String) -> Unit
@@ -162,7 +179,7 @@ fun CityElement(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 forecast.current?.tempC?.let {
-                    Text("${it}°C", style = MaterialTheme.typography.headlineLarge)
+                    Text(temepatureInUnits(it,weatherConfig.degreeUnit), style = MaterialTheme.typography.headlineLarge)
                 }
                 forecast.current?.condition?.icon?.let {
                     GlideImage(
@@ -184,7 +201,7 @@ fun CityElement(
                         painter = painterResource(R.drawable.wind_icon),
                         contentDescription = "wind"
                     )
-                    Text(text = "${windSpeed} km/h")
+                    Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit))
                 }
             }
             forecast.current?.lastUpdated?.let { lastUpdated ->
@@ -209,7 +226,7 @@ fun CityElement(
                 }
             }
         }
-        forecast.location?.name?.let{name->
+        forecast.location?.name?.let { name ->
             DropdownMenu(expanded = expandMenu, onDismissRequest = { expandMenu = false }) {
                 DropdownMenuItem(
                     text = { Text(text = "remove") },
