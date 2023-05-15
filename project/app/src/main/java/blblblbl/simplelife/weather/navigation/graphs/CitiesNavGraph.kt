@@ -15,24 +15,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import blblblbl.simplelife.cities.ui.CitiesFragment
+import blblblbl.simplelife.cities.ui.CityDetailedFragment
 import blblblbl.simplelife.weather.navigation.CitiesDest
 import java.time.LocalDate
 
 fun NavGraphBuilder.citiesGraph(navController: NavController){
     navigation(startDestination = CitiesDest.route, route = "CitiesNested") {
         composable(route = CitiesDest.route) {
-            /*Surface(modifier = Modifier.fillMaxSize()) {
-                Box() {
-                    val city = "city"
-                    Button(
-                        modifier =  Modifier.align(Alignment.Center),
-                        onClick = { navController.navigate("${CitiesNavGraph.DETAILED_CITY_ROUTE}/${"$city"}")}) {
-                        Text(text = city)
-                    }
-                }
-
-            }*/
-            CitiesFragment()
+            CitiesFragment(
+                onClick = {city-> navController.navigate("${CitiesNavGraph.DETAILED_CITY_ROUTE}/${city}")}
+            )
         }
         composable(
             route =  "${CitiesNavGraph.DETAILED_CITY_ROUTE}/{${CitiesNavGraph.DETAILED_CITY_KEY}}",
@@ -44,7 +36,7 @@ fun NavGraphBuilder.citiesGraph(navController: NavController){
         ){navBackStackEntry ->
             val dateString = navBackStackEntry.arguments?.getString(CitiesNavGraph.DETAILED_CITY_KEY)
             dateString?.let {cityName->
-                Text(text = cityName)
+                CityDetailedFragment(cityName)
             }
         }
     }

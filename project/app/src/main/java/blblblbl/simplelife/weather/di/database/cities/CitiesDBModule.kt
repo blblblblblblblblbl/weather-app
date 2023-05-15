@@ -43,5 +43,8 @@ class CitiesDBModule {
                     dbCreator.getDB().cityDao().update(entity)
                 }
             }
+
+            override suspend fun getForecast(name: String): ForecastResponse? =
+                dbCreator.getDB().cityDao().getCityForecast(name)?.mapToCities()
         }
 }

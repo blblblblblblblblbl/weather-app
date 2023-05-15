@@ -17,4 +17,7 @@ class CitiesDataSourceImpl @Inject constructor(
 
     override suspend fun saveForecast(forecastResponse: ForecastResponse) =
         citiesDatabase.saveForecast(forecastResponse)
+
+    override suspend fun getForecast(name: String): ForecastResponse? =
+        citiesDatabase.getForecast(name)
 }

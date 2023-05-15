@@ -10,4 +10,6 @@ interface CitiesRepository {
     suspend fun removeCity(name: String)
 
     suspend fun saveForecast(forecastResponse: ForecastResponse)
+
+    suspend fun getForecast(name: String): ForecastResponse?
 }

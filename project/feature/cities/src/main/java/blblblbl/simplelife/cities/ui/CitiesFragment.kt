@@ -63,7 +63,9 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
-fun CitiesFragment() {
+fun CitiesFragment(
+    onClick: (String) -> Unit
+) {
     val viewModel = hiltViewModel<CitiesFragmentViewModel>()
     val appConfig by viewModel.settings.collectAsState()
     val context = LocalContext.current
@@ -77,7 +79,7 @@ fun CitiesFragment() {
                     .padding(4.dp),
                 cities = viewModel.pagedCities,
                 weatherConfig = weatherConfig,
-                cityOnClick = {},
+                cityOnClick = onClick,
                 refreshOnClick = {name,loadStateChangeFun->
                     viewModel.refreshCity(context, name, loadStateChangeFun)
                 },
@@ -96,7 +98,7 @@ fun CitiesGrid(
     modifier: Modifier = Modifier,
     cities: Flow<PagingData<ForecastResponse>>,
     weatherConfig: WeatherConfig,
-    cityOnClick: () -> Unit,
+    cityOnClick: (String) -> Unit,
     refreshOnClick: (
         String,
         (LoadingState)->Unit
@@ -117,7 +119,7 @@ fun CitiesGrid(
                 CityElement(
                     forecast = item,
                     weatherConfig = weatherConfig,
-                    onClick = { cityOnClick() },
+                    onClick = cityOnClick,
                     refreshOnClick = refreshOnClick,
                     removeOnClick = removeOnClick
                 )
@@ -159,7 +161,7 @@ fun CityElement(
     modifier: Modifier = Modifier,
     forecast: ForecastResponse,
     weatherConfig: WeatherConfig,
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     refreshOnClick: (
         String,
         (LoadingState)->Unit
@@ -171,7 +173,11 @@ fun CityElement(
     var loadState by remember { mutableStateOf(LoadingState.LOADED) }
     Card(
         modifier = modifier.combinedClickable(
-            onClick = { onClick() },
+            onClick = {
+                      forecast.location?.name?.let { name->
+                          onClick(name)
+                      }
+            },
             onLongClick = { expandMenu = true }
         )
     ) {

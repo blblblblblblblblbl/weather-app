@@ -26,4 +26,7 @@ class CitiesRepositoryImpl @Inject constructor(
 
     override suspend fun saveForecast(forecastResponse: ForecastResponse) =
         citiesDataSource.saveForecast(forecastResponse.mapToData())
+
+    override suspend fun getForecast(name: String): ForecastResponse? =
+        citiesDataSource.getForecast(name)?.mapToDomain()
 }
