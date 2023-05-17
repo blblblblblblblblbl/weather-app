@@ -22,9 +22,12 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.appwidget.appWidgetBackground
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.background
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
@@ -328,93 +331,67 @@ fun WeatherWidgetContentLarge(prefs: Preferences) {
     val cityName = prefs[cityNamePK] ?: "city"
     val forecast = gson.fromJson(prefs[forecastJSONPK].orEmpty(), ForecastResponse::class.java)
     AppWidgetColumn() {
-        Text(
-            text = cityName, style = TextStyle(
-                fontSize = 30.sp, color = GlanceTheme.colors.onBackground
-            )
-        )
         Row {
             Column() {
-                var weatherIcon by remember { mutableStateOf<Bitmap?>(null) }
-                forecast.current?.condition?.icon?.let{icon->
-                    val context = LocalContext.current
-                    val bitmap = Glide.with(context).asBitmap().load("https:$icon")
-                    Glide.with(context)
-                        .asBitmap()
-                        .load("https:$icon")
-                        .into(object : CustomTarget<Bitmap>(){
-                            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                                weatherIcon = resource.trimBorders(Color.TRANSPARENT)
-                            }
-                            override fun onLoadCleared(placeholder: Drawable?) {}
-                        })
-                }
-                weatherIcon?.let {
-                    Image(
-                        provider = ImageProvider(it),
-                        contentDescription = "temperature",
-                        modifier = GlanceModifier.size(64.dp)
+                Text(
+                    text = cityName, style = TextStyle(
+                        fontSize = 30.sp, color = GlanceTheme.colors.onBackground
                     )
-                }
-                forecast.current?.condition?.text?.let {
-                    Text(
-                        text = it,
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = GlanceTheme.colors.onBackground
-                        )
-                    )
-                }
-            }
-            Spacer(modifier = GlanceModifier.size(height = 10.dp, width = 20.dp))
-            Column() {
-                Row() {
-                    Row(
-                        horizontalAlignment = Alignment.Horizontal.Start,
-                        verticalAlignment = Alignment.Vertical.CenterVertically
-                    ) {
+                )
+                Row(verticalAlignment = Alignment.Vertical.CenterVertically) {
+                    var weatherIcon by remember { mutableStateOf<Bitmap?>(null) }
+                    forecast.current?.condition?.icon?.let{icon->
+                        val context = LocalContext.current
+                        val bitmap = Glide.with(context).asBitmap().load("https:$icon")
+                        Glide.with(context)
+                            .asBitmap()
+                            .load("https:$icon")
+                            .into(object : CustomTarget<Bitmap>(){
+                                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                                    weatherIcon = resource.trimBorders(Color.TRANSPARENT)
+                                }
+                                override fun onLoadCleared(placeholder: Drawable?) {}
+                            })
+                    }
+                    weatherIcon?.let {
                         Image(
-                            provider = ImageProvider(R.drawable.temperature_icon),
+                            provider = ImageProvider(it),
                             contentDescription = "temperature",
-                            modifier = GlanceModifier.size(48.dp)
+                            modifier = GlanceModifier.size(64.dp)
                         )
-                        Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
-                        forecast.current?.tempC?.let { temp ->
-                            Text(
-                                text = "${temp}°C", style = TextStyle(
-                                    fontSize = 30.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = GlanceTheme.colors.onBackground
-                                )
-
-                            )
-                        }
                     }
-                    Spacer(GlanceModifier.size(height = 10.dp, width = 6.dp))
-                    Row(
-                        horizontalAlignment = Alignment.Horizontal.Start,
-                        verticalAlignment = Alignment.Vertical.CenterVertically
-                    ) {
-                        Image(
-                            provider = ImageProvider(R.drawable.humidity_icon),
-                            contentDescription = "humidity",
-                            modifier = GlanceModifier.size(48.dp)
-                        )
-                        Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
-                        forecast.current?.humidity?.let { humidity ->
-                            Text(
-                                text = "${humidity}%", style = TextStyle(
-                                    fontSize = 30.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = GlanceTheme.colors.onBackground
-                                )
-
+                    forecast.current?.condition?.text?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = GlanceTheme.colors.onBackground
                             )
-                        }
+                        )
                     }
                 }
+                Row(
+                    horizontalAlignment = Alignment.Horizontal.Start,
+                    verticalAlignment = Alignment.Vertical.CenterVertically
+                ) {
+                    Image(
+                        provider = ImageProvider(R.drawable.temperature_icon),
+                        contentDescription = "temperature",
+                        modifier = GlanceModifier.size(48.dp)
+                    )
+                    Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
+                    forecast.current?.tempC?.let { temp ->
+                        Text(
+                            text = "${temp}°C", style = TextStyle(
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = GlanceTheme.colors.onBackground
+                            )
 
+                        )
+                    }
+                }
                 Row(
                     horizontalAlignment = Alignment.Horizontal.Start,
                     verticalAlignment = Alignment.Vertical.CenterVertically
@@ -444,23 +421,104 @@ fun WeatherWidgetContentLarge(prefs: Preferences) {
                         }
                     }
                 }
-
-
-            }
-        }
-        LazyRow(content = )
-        LazyColumn(content = )
-        Row(modifier = GlanceModifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.Horizontal.End) {
-            forecast.current?.lastUpdated?.let { lastUpdated->
-                val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
-                Text(
-                    text = text, style = TextStyle(
-                        fontSize = 18.sp, color = GlanceTheme.colors.onBackground
+                Row(
+                    horizontalAlignment = Alignment.Horizontal.Start,
+                    verticalAlignment = Alignment.Vertical.CenterVertically
+                ) {
+                    Image(
+                        provider = ImageProvider(R.drawable.humidity_icon),
+                        contentDescription = "humidity",
+                        modifier = GlanceModifier.size(48.dp)
                     )
-                )
+                    Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
+                    forecast.current?.humidity?.let { humidity ->
+                        Text(
+                            text = "${humidity}%", style = TextStyle(
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = GlanceTheme.colors.onBackground
+                            )
+
+                        )
+                    }
+                }
+                forecast.current?.lastUpdated?.let { lastUpdated->
+                    val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
+                    Text(
+                        text = text, style = TextStyle(
+                            fontSize = 18.sp, color = GlanceTheme.colors.onBackground
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = GlanceModifier.size(height = 10.dp, width = 20.dp))
+            forecast.forecast?.forecastday?.get(0)?.let { day->
+                LazyColumn(){
+                    items(day.hour){hour->
+                        Box(
+                            modifier = GlanceModifier
+                                .padding(vertical = 4.dp)
+                                .background(GlanceTheme.colors.background)
+                        ) {
+                            Box(
+                                modifier = GlanceModifier
+                                    .padding(4.dp)
+                                    .appWidgetBackground()
+                                    .background(GlanceTheme.colors.primaryContainer)
+                                    .cornerRadius(8.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.Vertical.CenterVertically
+                                ) {
+                                    hour?.time?.let {
+                                        Text(
+                                            text = it.substring(11),
+                                            style = TextStyle(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Normal,
+                                                color = GlanceTheme.colors.onPrimaryContainer
+                                            )
+                                        )
+                                    }
+                                    var weatherIcon by remember { mutableStateOf<Bitmap?>(null) }
+                                    hour?.condition?.icon?.let{icon->
+                                        val context = LocalContext.current
+                                        val bitmap = Glide.with(context).asBitmap().load("https:$icon")
+                                        Glide.with(context)
+                                            .asBitmap()
+                                            .load("https:$icon")
+                                            .into(object : CustomTarget<Bitmap>(){
+                                                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                                                    weatherIcon = resource.trimBorders(Color.TRANSPARENT)
+                                                }
+                                                override fun onLoadCleared(placeholder: Drawable?) {}
+                                            })
+                                    }
+                                    weatherIcon?.let {
+                                        Image(
+                                            provider = ImageProvider(it),
+                                            contentDescription = "weather",
+                                            modifier = GlanceModifier.size(48.dp)
+                                        )
+                                    }
+                                    hour.tempC?.let { temp->
+                                        Text(
+                                            text = "${temp}°C", style = TextStyle(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = GlanceTheme.colors.onPrimaryContainer
+                                            )
+
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+
     }
 }
 fun Bitmap.trimBorders(color: Int): Bitmap {
