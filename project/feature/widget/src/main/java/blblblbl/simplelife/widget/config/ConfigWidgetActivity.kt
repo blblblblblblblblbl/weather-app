@@ -22,6 +22,7 @@ import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.forecastJSONPK
 import blblblbl.simplelife.widget.theme.WeatherTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.gson.GsonBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,8 +65,9 @@ class ConfigWidgetActivity : ComponentActivity()  {
     private fun saveWidgetState(name:String, forecast: ForecastResponse) = lifecycleScope.launch{
         val glanceId = GlanceAppWidgetManager(applicationContext).getGlanceIdBy(widgetId)
         updateAppWidgetState(applicationContext, glanceId) { prefs ->
+            val gson = GsonBuilder().setLenient().create()
             prefs[cityNamePK] = name
-            prefs[forecastJSONPK] = forecast.toString()
+            prefs[forecastJSONPK] = gson.toJson(forecast)
         }
         WeatherWidget().update(applicationContext, glanceId)
     }

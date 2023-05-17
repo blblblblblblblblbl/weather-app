@@ -7,7 +7,9 @@ import androidx.paging.map
 import blblblbl.simplelife.cities.data.database.CitiesDatabase
 import blblblbl.simplelife.database.model.CityWeatherEntity
 import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse
+import blblblbl.simplelife.forecast.data.utils.mapToDomain
 import blblblbl.simplelife.weather.di.database.DataBaseCreator
+import blblblbl.simplelife.widget.di.update.UpdateWeatherWidget
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +23,7 @@ import kotlinx.coroutines.flow.map
 class CitiesDBModule {
 
     @Provides
-    fun provideCityDB(dbCreator:DataBaseCreator):CitiesDatabase =
+    fun provideCityDB(dbCreator:DataBaseCreator, updateWeatherWidget: UpdateWeatherWidget):CitiesDatabase =
         object :CitiesDatabase{
             override fun getCitiesPagingDataFlow(pageSize: Int): Flow<PagingData<ForecastResponse>> =
                 Pager(
@@ -41,6 +43,7 @@ class CitiesDBModule {
                         forecast = forecastResponse.mapToDB()
                     )
                     dbCreator.getDB().cityDao().update(entity)
+                    updateWeatherWidget.update(forecastResponse.mapToDomain())
                 }
             }
 
