@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
@@ -16,17 +15,14 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.lifecycleScope
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
-import blblblbl.simplelife.settings.domain.repository.AppConfigRepository
 import blblblbl.simplelife.widget.WeatherWidget
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.forecastJSONPK
-import blblblbl.simplelife.widget.theme.WeatherTheme
+import blblblbl.simplelife.widget.config.theme.WeatherTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ConfigWidgetActivity : ComponentActivity()  {

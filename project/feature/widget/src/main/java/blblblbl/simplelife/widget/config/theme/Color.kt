@@ -1,4 +1,4 @@
-package blblblbl.simplelife.widget.theme
+package blblblbl.simplelife.widget.config.theme
 
 import androidx.compose.ui.graphics.Color
 

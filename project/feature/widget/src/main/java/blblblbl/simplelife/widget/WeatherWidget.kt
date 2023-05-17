@@ -20,6 +20,7 @@ import androidx.glance.text.Text
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.forecastJSONPK
+import blblblbl.simplelife.widget.theme.WeatherWidgetTheme
 import com.google.gson.GsonBuilder
 
 class WeatherWidget :GlanceAppWidget(){
@@ -39,15 +40,16 @@ class WeatherWidget :GlanceAppWidget(){
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val prefs = currentState<Preferences>()
-            val size = LocalSize.current
-            when (size){
-                thinMode-> WeatherWidgetContentThin(prefs = prefs)
-                smallMode-> WeatherWidgetContentSmall(prefs = prefs)
-                mediumMode-> WeatherWidgetContentMedium(prefs = prefs)
-                largeMode-> WeatherWidgetContentLarge(prefs = prefs)
+            WeatherWidgetTheme {
+                val prefs = currentState<Preferences>()
+                val size = LocalSize.current
+                when (size){
+                    thinMode-> WeatherWidgetContentThin(prefs = prefs)
+                    smallMode-> WeatherWidgetContentSmall(prefs = prefs)
+                    mediumMode-> WeatherWidgetContentMedium(prefs = prefs)
+                    largeMode-> WeatherWidgetContentLarge(prefs = prefs)
+                }
             }
-
         }
     }
 

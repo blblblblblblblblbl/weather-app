@@ -1,4 +1,4 @@
-package blblblbl.simplelife.widget.theme
+package blblblbl.simplelife.widget.config.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
