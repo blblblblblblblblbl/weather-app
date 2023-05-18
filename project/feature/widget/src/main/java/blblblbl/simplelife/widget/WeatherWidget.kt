@@ -31,7 +31,7 @@ class WeatherWidget :GlanceAppWidget(){
     companion object {
         private val smallMode = DpSize(120.dp, 120.dp)
         private val mediumMode = DpSize(260.dp, 200.dp)
-        private val largeMode = DpSize(260.dp, 280.dp)
+        private val largeMode = DpSize(300.dp, 280.dp)
     }
 
     override var stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
