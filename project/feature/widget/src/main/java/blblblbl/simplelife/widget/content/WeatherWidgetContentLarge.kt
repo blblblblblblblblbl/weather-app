@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
@@ -35,6 +36,7 @@ import androidx.glance.text.TextStyle
 import blblblbl.simplelife.forecast.domain.model.forecast.Current
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday
+import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.widget.AppWidgetColumn
 import blblblbl.simplelife.widget.R
 import blblblbl.simplelife.widget.WidgetKeys
@@ -48,6 +50,7 @@ fun WeatherWidgetContentLarge(prefs: Preferences) {
     val gson = GsonBuilder().setLenient().create()
     val cityName = prefs[WidgetKeys.Prefs.cityNamePK] ?: "city"
     val forecast = gson.fromJson(prefs[WidgetKeys.Prefs.forecastJSONPK].orEmpty(), ForecastResponse::class.java)
+    val weatherConfig = gson.fromJson(prefs[WidgetKeys.Prefs.weatherConfigPK].orEmpty(), WeatherConfig::class.java)
     val bigTextStyle = TextStyle(
         fontSize = 30.sp,
         fontWeight = FontWeight.Bold,
@@ -58,19 +61,22 @@ fun WeatherWidgetContentLarge(prefs: Preferences) {
         Row {
             Column() {
                 forecast?.current?.let {
-                    CurrentBlock(current = it)
+                    CurrentBlock(current = it, weatherConfig = weatherConfig)
                 }
             }
             Spacer(modifier = GlanceModifier.size(height = 10.dp, width = 20.dp))
             forecast.forecast?.forecastday?.get(0)?.let { day->
-                HoursBlock(day = day)
+                HoursBlock(day = day,weatherConfig)
             }
         }
 
     }
 }
 @Composable
-fun CurrentBlock(current:Current){
+fun CurrentBlock(
+    current:Current,
+    weatherConfig: WeatherConfig
+){
     val bigTextStyle = TextStyle(
         fontSize = 30.sp,
         fontWeight = FontWeight.Bold,
@@ -90,11 +96,12 @@ fun CurrentBlock(current:Current){
             Image(
                 provider = ImageProvider(R.drawable.temperature_icon),
                 contentDescription = "temperature",
-                modifier = GlanceModifier.size(48.dp)
+                modifier = GlanceModifier.size(48.dp),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
             )
             Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
             current.tempC?.let { temp ->
-                Text(text = "${temp}°C", style = bigTextStyle)
+                Text(text = temepatureInUnits(temp,weatherConfig.degreeUnit), style = bigTextStyle)
             }
         }
         Row(
@@ -104,13 +111,17 @@ fun CurrentBlock(current:Current){
             Image(
                 provider = ImageProvider(R.drawable.wind_icon),
                 contentDescription = "wind speed",
-                modifier = GlanceModifier.size(48.dp)
+                modifier = GlanceModifier.size(48.dp),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
             )
             Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
             current.windKph?.let { wind ->
                 Row() {
-                    Text(text = "${wind}", style = bigTextStyle)
-                    Text(text = "mph", style = bigTextStyle.copy(fontSize = 24.sp))
+                    val text = speedInUnits(wind,weatherConfig.speedUnit)
+                    val number = text.substring(0,4)
+                    val unit = text.substring(4,7)
+                    Text(text = number, style = bigTextStyle)
+                    Text(text = unit, style = bigTextStyle.copy(fontSize = 24.sp))
                 }
             }
         }
@@ -121,7 +132,8 @@ fun CurrentBlock(current:Current){
             Image(
                 provider = ImageProvider(R.drawable.humidity_icon),
                 contentDescription = "humidity",
-                modifier = GlanceModifier.size(48.dp)
+                modifier = GlanceModifier.size(48.dp),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
             )
             Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
             current.humidity?.let { humidity ->
@@ -136,7 +148,7 @@ fun CurrentBlock(current:Current){
     }
 }
 @Composable
-fun HoursBlock(day:Forecastday){
+fun HoursBlock(day:Forecastday,weatherConfig: WeatherConfig){
     LazyColumn(){
         items(day.hour){hour->
             Box(
@@ -169,12 +181,11 @@ fun HoursBlock(day:Forecastday){
                         }
                         hour.tempC?.let { temp->
                             Text(
-                                text = "${temp}°C", style = TextStyle(
+                                text = temepatureInUnits(temp,weatherConfig.degreeUnit), style = TextStyle(
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = GlanceTheme.colors.onPrimaryContainer
                                 )
-
                             )
                         }
                     }
@@ -182,9 +193,4 @@ fun HoursBlock(day:Forecastday){
             }
         }
     }
-}
-
-@Composable
-fun HourWeather(){
-
 }

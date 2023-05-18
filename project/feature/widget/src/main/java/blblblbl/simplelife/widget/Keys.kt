@@ -8,6 +8,7 @@ object WidgetKeys{
     object Prefs {
         val cityNamePK = stringPreferencesKey("cityNamePK")
         val forecastJSONPK = stringPreferencesKey("forecastJSONPK")
+        val weatherConfigPK = stringPreferencesKey("weatherConfigPK")
     }
 
 }

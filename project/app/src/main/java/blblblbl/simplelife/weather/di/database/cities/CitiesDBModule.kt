@@ -43,7 +43,7 @@ class CitiesDBModule {
                         forecast = forecastResponse.mapToDB()
                     )
                     dbCreator.getDB().cityDao().update(entity)
-                    updateWeatherWidget.update(forecastResponse.mapToDomain())
+                    updateWeatherWidget.updateForecast(forecastResponse.mapToDomain())
                 }
             }
 

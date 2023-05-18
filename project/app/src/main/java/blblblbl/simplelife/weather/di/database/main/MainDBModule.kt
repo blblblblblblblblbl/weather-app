@@ -26,7 +26,7 @@ class MainDBModule{
                         forecast = forecastResponse.mapToDB()
                     )
                     dbCreator.getDB().cityDao().insert(entity)
-                    updateWeatherWidget.update(forecastResponse.mapToDomain())
+                    updateWeatherWidget.updateForecast(forecastResponse.mapToDomain())
                 }
             }
 

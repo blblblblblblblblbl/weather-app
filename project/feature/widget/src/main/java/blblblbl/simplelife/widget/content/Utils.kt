@@ -14,6 +14,8 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.layout.size
+import blblblbl.simplelife.settings.domain.model.config.weather.DegreeUnit
+import blblblbl.simplelife.settings.domain.model.config.weather.SpeedUnit
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -86,3 +88,28 @@ fun Bitmap.trimBorders(color: Int): Bitmap {
 
     return Bitmap.createBitmap(this, startX, startY, newWidth, newHeight)
 }
+
+fun temepatureInUnits(tempC:Double,unit: DegreeUnit):String{
+    return when (unit){
+        DegreeUnit.C->{
+            "${tempC}°C"
+        }
+        DegreeUnit.F->{
+            "${(tempC*1.8+32).format(1)}°F"
+        }
+    }
+}
+fun speedInUnits(speed:Double,unit: SpeedUnit):String{
+    return when (unit){
+        SpeedUnit.Kmh->{
+            "${speed}kph"
+        }
+        SpeedUnit.Mph->{
+            "${(speed/1.609).format(1)}mph"
+        }
+        SpeedUnit.Ms->{
+            "${(speed/3.6).format(1)}ms"
+        }
+    }
+}
+fun Double.format(digits: Int) = "%.${digits}f".format(this)

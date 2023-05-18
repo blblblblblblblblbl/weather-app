@@ -10,14 +10,18 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.lifecycleScope
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
+import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.widget.WeatherWidget
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.forecastJSONPK
+import blblblbl.simplelife.widget.WidgetKeys.Prefs.weatherConfigPK
 import blblblbl.simplelife.widget.config.theme.WeatherTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.GsonBuilder
@@ -39,31 +43,35 @@ class ConfigWidgetActivity : ComponentActivity()  {
             WeatherTheme(
                 configFlow = viewModel.getSettingsFlow()
             ){
+                val appConfig by viewModel.getSettingsFlow().collectAsState()
                 val useDarkIcons = !isSystemInDarkTheme()
                 val color = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
                 SideEffect {
                     systemUiController.setSystemBarsColor(color, darkIcons = useDarkIcons)
                 }
                 CitiesFragment(onClick = {name,forecast->
-                handleSelectCity(name,forecast)
+                    appConfig?.weatherConfig?.let {weatherConfig->
+                        handleSelectCity(name,forecast,weatherConfig)
+                    }
             })
             }
 
         }
     }
 
-    private fun handleSelectCity(name:String, forecast: ForecastResponse) {
+    private fun handleSelectCity(name:String, forecast: ForecastResponse,weatherConfig:WeatherConfig) {
         setResult(RESULT_OK, result)
         finish()
-        saveWidgetState(name,forecast)
+        saveWidgetState(name,forecast,weatherConfig)
     }
 
-    private fun saveWidgetState(name:String, forecast: ForecastResponse) = lifecycleScope.launch{
+    private fun saveWidgetState(name:String, forecast: ForecastResponse,weatherConfig:WeatherConfig) = lifecycleScope.launch{
         val glanceId = GlanceAppWidgetManager(applicationContext).getGlanceIdBy(widgetId)
         updateAppWidgetState(applicationContext, glanceId) { prefs ->
             val gson = GsonBuilder().setLenient().create()
             prefs[cityNamePK] = name
             prefs[forecastJSONPK] = gson.toJson(forecast)
+            prefs[weatherConfigPK] = gson.toJson(weatherConfig)
         }
         WeatherWidget().update(applicationContext, glanceId)
     }

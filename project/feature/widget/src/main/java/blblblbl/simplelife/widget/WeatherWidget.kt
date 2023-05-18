@@ -18,8 +18,10 @@ import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.Text
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
+import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.forecastJSONPK
+import blblblbl.simplelife.widget.WidgetKeys.Prefs.weatherConfigPK
 import blblblbl.simplelife.widget.content.WeatherWidgetContentLarge
 import blblblbl.simplelife.widget.content.WeatherWidgetContentMedium
 import blblblbl.simplelife.widget.content.WeatherWidgetContentSmall
@@ -72,4 +74,14 @@ suspend fun GlanceAppWidgetManager.mapForecastToWidget(context: Context,forecast
             WeatherWidget().updateIf<Preferences>(context){
                 it[cityNamePK] == forecastResponse.location?.name
             }
+        }
+
+suspend fun GlanceAppWidgetManager.mapWeatherConfigToWidget(context: Context,weatherConfig: WeatherConfig) =
+    getGlanceIds(WeatherWidget::class.java)
+        .forEach { glanceId ->
+            updateAppWidgetState(context,glanceId){prefs->
+                val gson = GsonBuilder().setLenient().create()
+                prefs[weatherConfigPK] = gson.toJson(weatherConfig)
+            }
+            WeatherWidget().update(context,glanceId)
         }
