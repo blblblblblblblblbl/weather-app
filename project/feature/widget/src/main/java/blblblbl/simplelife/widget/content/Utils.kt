@@ -102,13 +102,13 @@ fun temepatureInUnits(tempC:Double,unit: DegreeUnit):String{
 fun speedInUnits(speed:Double,unit: SpeedUnit):String{
     return when (unit){
         SpeedUnit.Kmh->{
-            "${speed}kph"
+            "${speed}|kph"
         }
         SpeedUnit.Mph->{
-            "${(speed/1.609).format(1)}mph"
+            "${(speed/1.609).format(1)}|mph"
         }
         SpeedUnit.Ms->{
-            "${(speed/3.6).format(1)}ms"
+            "${(speed/3.6).format(1)}|ms"
         }
     }
 }

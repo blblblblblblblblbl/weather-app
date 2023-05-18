@@ -118,10 +118,9 @@ fun CurrentBlock(
             current.windKph?.let { wind ->
                 Row() {
                     val text = speedInUnits(wind,weatherConfig.speedUnit)
-                    val number = text.substring(0,4)
-                    val unit = text.substring(4,7)
-                    Text(text = number, style = bigTextStyle)
-                    Text(text = unit, style = bigTextStyle.copy(fontSize = 24.sp))
+                    val strings = text.split("|")
+                    Text(text = strings[0], style = bigTextStyle)
+                    Text(text = strings[1], style = bigTextStyle.copy(fontSize = 24.sp))
                 }
             }
         }
