@@ -20,14 +20,16 @@ import androidx.glance.text.Text
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.forecastJSONPK
+import blblblbl.simplelife.widget.content.WeatherWidgetContentLarge
+import blblblbl.simplelife.widget.content.WeatherWidgetContentMedium
+import blblblbl.simplelife.widget.content.WeatherWidgetContentSmall
 import blblblbl.simplelife.widget.theme.WeatherWidgetTheme
 import com.google.gson.GsonBuilder
 
 class WeatherWidget :GlanceAppWidget(){
 
     companion object {
-        private val thinMode = DpSize(120.dp, 120.dp)
-        private val smallMode = DpSize(184.dp, 184.dp)
+        private val smallMode = DpSize(120.dp, 120.dp)
         private val mediumMode = DpSize(260.dp, 200.dp)
         private val largeMode = DpSize(260.dp, 280.dp)
     }
@@ -35,7 +37,7 @@ class WeatherWidget :GlanceAppWidget(){
     override var stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
-        setOf(thinMode, smallMode, mediumMode, largeMode)
+        setOf(smallMode, mediumMode, largeMode)
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -44,7 +46,6 @@ class WeatherWidget :GlanceAppWidget(){
                 val prefs = currentState<Preferences>()
                 val size = LocalSize.current
                 when (size){
-                    thinMode-> WeatherWidgetContentThin(prefs = prefs)
                     smallMode-> WeatherWidgetContentSmall(prefs = prefs)
                     mediumMode-> WeatherWidgetContentMedium(prefs = prefs)
                     largeMode-> WeatherWidgetContentLarge(prefs = prefs)
