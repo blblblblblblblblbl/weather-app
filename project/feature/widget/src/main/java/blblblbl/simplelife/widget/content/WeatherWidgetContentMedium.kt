@@ -38,13 +38,17 @@ fun WeatherWidgetContentMedium(prefs: Preferences) {
     )
     AppWidgetColumn() {
         Text(text = cityName, style = bigTextStyle)
+        forecast.current?.condition?.text?.let {
+            Text(text = it, style = bigTextStyle.copy(fontSize = 20.sp))
+        }
         Row {
             Column() {
                 forecast.current?.condition?.icon?.let{icon->
-                    WeatherIcon(url = "https:$icon", modifier = GlanceModifier.size(64.dp))
+                    WeatherIcon(url = "https:$icon", modifier = GlanceModifier.size(96.dp))
                 }
-                forecast.current?.condition?.text?.let {
-                    Text(text = it, style = bigTextStyle.copy(fontSize = 20.sp))
+                forecast.current?.lastUpdated?.let { lastUpdated->
+                    val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
+                    Text(text = text, style = bigTextStyle)
                 }
             }
             Spacer(modifier = GlanceModifier.size(height = 10.dp, width = 20.dp))
@@ -92,7 +96,7 @@ fun WeatherWidgetContentMedium(prefs: Preferences) {
                     Image(
                         provider = ImageProvider(R.drawable.humidity_icon),
                         contentDescription = "humidity",
-                        modifier = GlanceModifier.size(48.dp),
+                        modifier = GlanceModifier.size(42.dp),
                         colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
                     )
                     Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
@@ -100,13 +104,6 @@ fun WeatherWidgetContentMedium(prefs: Preferences) {
                         Text(text = "${humidity}%", style = bigTextStyle)
                     }
                 }
-            }
-        }
-        Row(modifier = GlanceModifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.Horizontal.End) {
-            forecast.current?.lastUpdated?.let { lastUpdated->
-                val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
-                Text(text = text, style = bigTextStyle.copy(fontSize = 18.sp))
             }
         }
     }

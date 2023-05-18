@@ -83,12 +83,23 @@ fun CurrentBlock(
         color = GlanceTheme.colors.onBackground
     )
     Column() {
-        current.condition?.icon?.let{icon->
-            WeatherIcon(url = "https:$icon", modifier = GlanceModifier.size(64.dp))
-        }
         current.condition?.text?.let {
             Text(text = it, style = bigTextStyle.copy(fontSize = 20.sp))
         }
+        Row(
+            horizontalAlignment = Alignment.Horizontal.Start,
+            verticalAlignment = Alignment.Vertical.CenterVertically
+        ) {
+            current.condition?.icon?.let{icon->
+                WeatherIcon(url = "https:$icon", modifier = GlanceModifier.size(64.dp))
+            }
+            Spacer(GlanceModifier.size(height = 10.dp, width = 4.dp))
+            current.lastUpdated?.let { lastUpdated->
+                val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
+                Text(text = text, style = bigTextStyle)
+            }
+        }
+
         Row(
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.CenterVertically
@@ -139,11 +150,6 @@ fun CurrentBlock(
                 Text(text = "${humidity}%", style = bigTextStyle)
             }
         }
-        Spacer(modifier = GlanceModifier.defaultWeight())
-        current.lastUpdated?.let { lastUpdated->
-            val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
-            Text(text = text, style = bigTextStyle.copy(fontSize = 18.sp))
-        }
     }
 }
 @Composable
@@ -170,7 +176,7 @@ fun HoursBlock(day:Forecastday,weatherConfig: WeatherConfig){
                                 text = it.substring(11),
                                 style = TextStyle(
                                     fontSize = 20.sp,
-                                    fontWeight = FontWeight.Normal,
+                                    fontWeight = FontWeight.Bold,
                                     color = GlanceTheme.colors.onPrimaryContainer
                                 )
                             )

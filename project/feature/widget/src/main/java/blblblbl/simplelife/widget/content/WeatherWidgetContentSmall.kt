@@ -90,9 +90,7 @@ fun WeatherWidgetContentSmall(prefs: Preferences) {
             forecast.current?.lastUpdated?.let { lastUpdated->
                 val text = lastUpdated.removePrefix("last updated ").removeRange(0,11)
                 Text(
-                    text = text, style = TextStyle(
-                        fontSize = 18.sp, color = GlanceTheme.colors.onBackground
-                    )
+                    text = text, style = bigTextStyle.copy(fontSize = 18.sp)
                 )
             }
         }
