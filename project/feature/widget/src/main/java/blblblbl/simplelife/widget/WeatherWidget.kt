@@ -1,6 +1,7 @@
 package blblblbl.simplelife.widget
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
@@ -63,9 +64,12 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
 }
 
 suspend fun GlanceAppWidgetManager.mapForecastToWidget(context: Context,forecastResponse: ForecastResponse) =
+
     getGlanceIds(WeatherWidget::class.java)
         .forEach { glanceId ->
+            Log.d("MyLog","glanceId")
             updateAppWidgetState(context,glanceId){prefs->
+                Log.d("MyLog","prefs[cityNamePK]:${prefs[cityNamePK]}")
                 if (prefs[cityNamePK]==forecastResponse.location?.name){
                     val gson = GsonBuilder().setLenient().create()
                     prefs[forecastJSONPK] = gson.toJson(forecastResponse)

@@ -32,7 +32,7 @@ fun WeatherIcon(
         .load(url)
         .into(object : CustomTarget<Bitmap>(){
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                weatherIcon = resource.trimBorders(Color.TRANSPARENT)
+                weatherIcon = resource//.trimBorders(Color.TRANSPARENT)
             }
             override fun onLoadCleared(placeholder: Drawable?) {}
         })

@@ -32,6 +32,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import blblblbl.simplelife.main_screen.ui.MainScreenFragment
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
@@ -43,20 +53,22 @@ import blblblbl.simplelife.weather.navigation.MainDest
 import blblblbl.simplelife.weather.navigation.OnBoardingDest
 import blblblbl.simplelife.weather.navigation.graphs.citiesGraph
 import blblblbl.simplelife.weather.presentation.MainActivityViewModel
+import blblblbl.simplelife.weather.ui.WidgetUpdateWorker
 import blblblbl.simplelife.weather.ui.theme.WeatherTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enqueueWidgetsUpdate()
         lifecycleScope.launch {
             viewModel.getSettingsFlow().collect{appConfig->
                 appConfig?.weatherConfig?.let {
-                    Log.d("MyLog", "update weather config")
                     viewModel.updateWidgetWeatherConfig(it)
                 }
             }
@@ -84,6 +96,28 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    fun enqueueWidgetsUpdate(){
+        /*val updateWorkRequest: PeriodicWorkRequest =
+            PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, repeatIntervalTimeUnit = TimeUnit.MINUTES)
+                .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            UPDATE_WORKER_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            updateWorkRequest
+        )*/
+        val updateWorkRequest: OneTimeWorkRequest =
+            OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
+                //.setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .build()
+        WorkManager.getInstance(this).enqueue(
+            updateWorkRequest
+        )
+        Log.d("MyLog","enqueueWidgetsUpdate")
+    }
+    companion object{
+        const val UPDATE_WORKER_NAME = "UPDATE_WORKER_NAME"
     }
 }
 
