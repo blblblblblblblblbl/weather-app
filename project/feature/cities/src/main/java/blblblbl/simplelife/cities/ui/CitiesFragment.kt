@@ -3,7 +3,6 @@ package blblblbl.simplelife.cities.ui
 import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -168,7 +167,6 @@ fun CityElement(
             ) -> Unit,
     removeOnClick: (String) -> Unit
 ) {
-    Log.d("MyLog", Random.nextInt(10).toString())
     var expandMenu by remember { mutableStateOf(false) }
     var loadState by remember { mutableStateOf(LoadingState.LOADED) }
     Card(

@@ -1,6 +1,7 @@
 package blblblbl.simplelife.weather
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,14 +21,27 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import blblblbl.simplelife.main_screen.ui.MainScreenFragment
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
@@ -39,16 +53,26 @@ import blblblbl.simplelife.weather.navigation.MainDest
 import blblblbl.simplelife.weather.navigation.OnBoardingDest
 import blblblbl.simplelife.weather.navigation.graphs.citiesGraph
 import blblblbl.simplelife.weather.presentation.MainActivityViewModel
+import blblblbl.simplelife.weather.ui.WidgetUpdateWorker
 import blblblbl.simplelife.weather.ui.theme.WeatherTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enqueueWidgetsUpdate()
+        lifecycleScope.launch {
+            viewModel.getSettingsFlow().collect{appConfig->
+                appConfig?.weatherConfig?.let {
+                    viewModel.updateWidgetWeatherConfig(it)
+                }
+            }
+        }
         setContent {
             val systemUiController = rememberSystemUiController()
             WeatherTheme(
@@ -72,6 +96,28 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    fun enqueueWidgetsUpdate(){
+        val updateWorkRequest: PeriodicWorkRequest =
+            PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, repeatIntervalTimeUnit = TimeUnit.MINUTES)
+                .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            UPDATE_WORKER_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            updateWorkRequest
+        )
+        /*val updateWorkRequest: OneTimeWorkRequest =
+            OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
+                //.setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .build()
+        WorkManager.getInstance(this).enqueue(
+            updateWorkRequest
+        )
+        Log.d("MyLog","enqueueWidgetsUpdate")*/
+    }
+    companion object{
+        const val UPDATE_WORKER_NAME = "UPDATE_WIDGET_FORECAST_WORKER_NAME"
     }
 }
 
