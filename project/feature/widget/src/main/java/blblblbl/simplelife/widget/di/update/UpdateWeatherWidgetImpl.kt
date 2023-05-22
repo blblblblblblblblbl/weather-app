@@ -14,7 +14,6 @@ class UpdateWeatherWidgetImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ):UpdateWeatherWidget {
     override suspend fun updateForecast(context:Context, forecastResponse: ForecastResponse) {
-        Log.d("MyLog","UpdateWeatherWidgetImpl")
         GlanceAppWidgetManager(context).mapForecastToWidget(context, forecastResponse)
     }
 

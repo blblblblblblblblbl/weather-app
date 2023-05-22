@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     fun enqueueWidgetsUpdate(){
-        /*val updateWorkRequest: PeriodicWorkRequest =
+        val updateWorkRequest: PeriodicWorkRequest =
             PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, repeatIntervalTimeUnit = TimeUnit.MINUTES)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
@@ -106,18 +106,18 @@ class MainActivity : ComponentActivity() {
             UPDATE_WORKER_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             updateWorkRequest
-        )*/
-        val updateWorkRequest: OneTimeWorkRequest =
+        )
+        /*val updateWorkRequest: OneTimeWorkRequest =
             OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
                 //.setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
         WorkManager.getInstance(this).enqueue(
             updateWorkRequest
         )
-        Log.d("MyLog","enqueueWidgetsUpdate")
+        Log.d("MyLog","enqueueWidgetsUpdate")*/
     }
     companion object{
-        const val UPDATE_WORKER_NAME = "UPDATE_WORKER_NAME"
+        const val UPDATE_WORKER_NAME = "UPDATE_WIDGET_FORECAST_WORKER_NAME"
     }
 }
 

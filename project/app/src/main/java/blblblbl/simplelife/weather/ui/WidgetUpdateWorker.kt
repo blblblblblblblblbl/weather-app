@@ -8,6 +8,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import blblblbl.simplelife.database.model.CityWeatherEntity
+import blblblbl.simplelife.database.model.ForecastResponse
 import blblblbl.simplelife.forecast.data.utils.mapToDomain
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.weather.di.database.DataBaseCreator
@@ -29,19 +30,16 @@ class WidgetUpdateWorker @AssistedInject constructor(
 ): Worker(context,params){
     override fun doWork(): Result {
         return try {
-            Log.d("MyLog","doWork")
             runBlocking {
                 val glanceIds = GlanceAppWidgetManager(context).getGlanceIds(WeatherWidget::class.java)
                 glanceIds.forEach { glanceId ->
+                    var cityName:String? = null
                     updateAppWidgetState(context,glanceId){prefs->
-                        val cityName = prefs[cityNamePK]
-                        cityName?.let { cityName->
-                            Log.d("MyLog","updateWeatherWidget, city:$cityName")
-                            val forecast = getForecastUseCase.getForecastByName(cityName,7,"no","no")
-                            Log.d("MyLog","forecast $forecast")
-                            updateWeatherWidget.updateForecast(context,forecast)
-                            Log.d("MyLog","updateWeatherWidget, city:$cityName")
-                        }
+                        cityName = prefs[cityNamePK]
+                    }
+                    cityName?.let { cityName->
+                        val forecast = getForecastUseCase.getForecastByName(cityName,7,"no","no")
+                        updateWeatherWidget.updateForecast(context,forecast)
                     }
                 }
             }
