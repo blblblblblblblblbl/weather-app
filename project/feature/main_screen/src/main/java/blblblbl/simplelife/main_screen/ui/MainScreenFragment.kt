@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -254,7 +255,7 @@ fun CurrentWeatherBlock(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = "last updated")
-                        Text(text = lastUpdated)
+                        Text(text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1])
                     }
                     IconButton(onClick = { refreshOnClick() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "refresh")
@@ -281,15 +282,7 @@ fun NextDays(
             DropDownCard(
                 modifier = Modifier.fillMaxWidth(),
                 header = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        DayHead(day = day, weatherConfig = weatherConfig)
-                    }
+                    DayHead(day = day, weatherConfig = weatherConfig)
                 }
             ) {
                 DayExpanded(
@@ -315,7 +308,7 @@ fun DayHead(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         day.date?.let {
-            Text(text = "${it.subSequence(8, 10)}.${it.subSequence(5, 7)}")
+            Text(text = "${it.subSequence(8, 10)}.${it.subSequence(5, 7)}",fontWeight = FontWeight.Bold)
         }
         day.day?.avgtempC?.let {
             Icon(
