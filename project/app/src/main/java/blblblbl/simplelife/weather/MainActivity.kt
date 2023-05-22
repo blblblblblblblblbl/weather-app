@@ -1,7 +1,6 @@
 package blblblbl.simplelife.weather
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,8 +20,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,20 +31,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import blblblbl.simplelife.main_screen.ui.MainScreenFragment
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
 import blblblbl.simplelife.weather.navigation.AuthorsDest
-import blblblbl.simplelife.weather.navigation.CitiesDest
 import blblblbl.simplelife.weather.navigation.DrawerContent
 import blblblbl.simplelife.weather.navigation.MainDest
 import blblblbl.simplelife.weather.navigation.OnBoardingDest
@@ -107,14 +99,6 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.KEEP,
             updateWorkRequest
         )
-        /*val updateWorkRequest: OneTimeWorkRequest =
-            OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
-                //.setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-                .build()
-        WorkManager.getInstance(this).enqueue(
-            updateWorkRequest
-        )
-        Log.d("MyLog","enqueueWidgetsUpdate")*/
     }
     companion object{
         const val UPDATE_WORKER_NAME = "UPDATE_WIDGET_FORECAST_WORKER_NAME"
