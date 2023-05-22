@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import blblblbl.simplelife.main_screen.ui.MainScreenFragment
+import blblblbl.simplelife.onboarding.OnBoardingScreen
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
@@ -149,6 +151,7 @@ fun AppScreen(
     }
 
 }
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -171,7 +174,9 @@ fun AppNavHost(
             SettingsFragment()
         }
         composable(route = OnBoardingDest.route) {
-            Text(text = OnBoardingDest.name)
+            OnBoardingScreen {
+                navController.navigate(MainDest.route)
+            }
         }
         composable(route = AuthorsDest.route) {
             Surface(modifier = Modifier.fillMaxSize()) {
