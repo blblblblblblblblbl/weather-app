@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
     }
     fun enqueueWidgetsUpdate(){
         val updateWorkRequest: PeriodicWorkRequest =
-            PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, repeatIntervalTimeUnit = TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<WidgetUpdateWorker>(60, repeatIntervalTimeUnit = TimeUnit.MINUTES)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
