@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "634272755653",
+    "project_id": "weather-6e032",
+    "storage_bucket": "weather-6e032.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634272755653:android:bb06adea3be823945be5ac",
+        "android_client_info": {
+          "package_name": "blblblbl.simplelife.weather"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "634272755653-cf4eukofk0u13ful1o01mflrlt2kua90.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHNwSHDZKa6C8kaQrjbgueVMywJFw2elY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "634272755653-cf4eukofk0u13ful1o01mflrlt2kua90.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

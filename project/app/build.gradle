@@ -1,8 +1,19 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()  // Maven Central repository
+    }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.15'
+    }
+}
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id "org.jetbrains.kotlin.kapt"
     id "com.google.dagger.hilt.android"
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -108,6 +119,11 @@ dependencies {
     //
     // WorkManager dependency
     implementation "androidx.work:work-runtime-ktx:2.8.1"
+    //
+    //firebase
+    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
     //
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

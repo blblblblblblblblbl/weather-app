@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -85,7 +86,6 @@ class MainActivity : ComponentActivity() {
                         startDestination = MainDest,
                         showOnBoarding = false,//(this::showOnBoarding.isInitialized)&&!showOnBoarding.IsShown(),
                         onBoardingOnClick= {/*showOnBoarding.saveShown()*/}
-
                     )
                 }
             }
