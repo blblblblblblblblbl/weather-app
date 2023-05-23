@@ -73,10 +73,9 @@ class MainActivity : ComponentActivity() {
             WeatherTheme(
                 configFlow = viewModel.getSettingsFlow()
             ) {
-                val useDarkIcons = !isSystemInDarkTheme()
                 val color = MaterialTheme.colorScheme.surfaceColorAtElevation(5.dp)
                 SideEffect {
-                    systemUiController.setSystemBarsColor(color, darkIcons = useDarkIcons)
+                    systemUiController.setSystemBarsColor(color)
                 }
 
                 Surface(
