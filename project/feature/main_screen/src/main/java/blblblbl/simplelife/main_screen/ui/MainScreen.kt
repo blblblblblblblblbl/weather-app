@@ -1,10 +1,6 @@
 package blblblbl.simplelife.main_screen.ui
 
 import android.Manifest
-import android.content.Context
-import android.location.LocationManager
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -44,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.location.LocationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import blblblbl.simplelife.forecast.domain.model.forecast.Astro
 import blblblbl.simplelife.forecast.domain.model.forecast.Day
@@ -63,7 +59,9 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    menuOnCLick:()->Unit
+) {
     val viewModel = hiltViewModel<MainScreenFragmentViewModel>()
     val forecast by viewModel.forecast.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -83,8 +81,11 @@ fun MainScreen() {
                     onSearchClicked = {
                         viewModel.getForecastByName(context)
                     },
-                    onCloseClicked = {
+                    onClearClicked = {
                         viewModel.updateSearchQuery("")
+                    },
+                    onLocationClicked = {
+                        viewModel.locationOnClick(context)
                     }
                 )
             }
@@ -107,8 +108,8 @@ fun MainScreen() {
                         .padding(horizontal = 24.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    LocationButton {
-                        viewModel.locationOnClick(context)
+                    IconButton(onClick = {menuOnCLick()}) {
+                        Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
                     }
                 }
                 appConfig?.weatherConfig?.let { weatherConfig ->
@@ -130,7 +131,7 @@ fun MainScreen() {
                             IconButton(onClick = {
                                 viewModel.saveForecastToFavourites()
                             }) {
-                                Icon(Icons.Default.Favorite, contentDescription = "location button")
+                                Icon(Icons.Default.Favorite, contentDescription = "add to favourites button")
                             }
                         }
                     }
@@ -159,34 +160,7 @@ fun MainScreen() {
     }
 
 }
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun LocationButton(
-    onClick: () -> Unit
-){
-    val locationPermissionState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ),
-        onPermissionsResult = {
-            val notGrantedList = it.values.filter {!it}
-            if (notGrantedList.isEmpty()){
-                onClick()
-            }
-        }
-    )
-    IconButton(onClick = {
-        if (locationPermissionState.allPermissionsGranted){
-            onClick()
-        }
-        else{
-            locationPermissionState.launchMultiplePermissionRequest()
-        }
-    }) {
-        Icon(Icons.Default.MyLocation, contentDescription = "location button")
-    }
-}
+
 @Composable
 fun CurrentWeatherBlock(
     modifier: Modifier = Modifier,

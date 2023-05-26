@@ -1,12 +1,15 @@
 package blblblbl.simplelife.main_screen.ui
 
+import android.Manifest
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,12 +21,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +34,8 @@ fun SearchWidget(
     text: String,
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
-    onCloseClicked: () -> Unit
+    onClearClicked: () -> Unit,
+    onLocationClicked: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -61,18 +65,6 @@ fun SearchWidget(
             singleLine = true,
             leadingIcon = {
                 IconButton(
-                    modifier = Modifier,
-                    onClick = {onSearchClicked(text)}
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            trailingIcon = {
-                IconButton(
                     modifier = Modifier
                         .semantics {
                             contentDescription = "CloseButton"
@@ -81,7 +73,7 @@ fun SearchWidget(
                         if (text.isNotEmpty()) {
                             onTextChange("")
                         } else {
-                            onCloseClicked()
+                            onClearClicked()
                         }
                     }
                 ) {
@@ -90,6 +82,21 @@ fun SearchWidget(
                         contentDescription = "Close Icon",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            },
+            trailingIcon = {
+                Row() {
+                    LocationButton {onLocationClicked()}
+                    IconButton(
+                        modifier = Modifier,
+                        onClick = {onSearchClicked(text)}
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search Icon",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             },
             keyboardOptions = KeyboardOptions(
@@ -101,5 +108,33 @@ fun SearchWidget(
                 }
             )
         )
+    }
+}
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun LocationButton(
+    onClick: () -> Unit
+){
+    val locationPermissionState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ),
+        onPermissionsResult = {
+            val notGrantedList = it.values.filter {!it}
+            if (notGrantedList.isEmpty()){
+                onClick()
+            }
+        }
+    )
+    IconButton(onClick = {
+        if (locationPermissionState.allPermissionsGranted){
+            onClick()
+        }
+        else{
+            locationPermissionState.launchMultiplePermissionRequest()
+        }
+    }) {
+        Icon(Icons.Default.MyLocation, contentDescription = "location button")
     }
 }

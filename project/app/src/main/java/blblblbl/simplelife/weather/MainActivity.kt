@@ -149,7 +149,7 @@ fun AppScreen(
             AppNavHost(
                 navController = navController,
                 startDestination = startDestination,
-                openMenu = {
+                menuOnclick = {
                     coroutineScope.launch {
                         drawerState.open()
                     }
@@ -165,7 +165,7 @@ fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     startDestination:AppDestination = MainDest,
-    openMenu: ()->Unit,
+    menuOnclick:()->Unit
 ) {
     NavHost(
         navController = navController,
@@ -173,7 +173,7 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(route = MainDest.route) {
-            MainScreen()
+            MainScreen(menuOnclick)
         }
         citiesGraph(navController)
         composable(route = AppSettingDest.route) {
