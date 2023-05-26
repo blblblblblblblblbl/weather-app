@@ -177,8 +177,8 @@ fun CurrentWeatherBlock(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "last updated")
-                        Text(text = lastUpdated)
+                        Text(text = "updated")
+                        Text(text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1])
                     }
                     IconButton(onClick = { refreshOnClick() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "refresh")
