@@ -40,7 +40,7 @@ fun DrawerContent(
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        Text(text = "pomodoro timer", textAlign = TextAlign.Start, modifier = Modifier.fillMaxWidth())
+        Text(text = "Weather", textAlign = TextAlign.Start, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(20.dp))
         NavigationDrawerItems(
             navController = navController,
