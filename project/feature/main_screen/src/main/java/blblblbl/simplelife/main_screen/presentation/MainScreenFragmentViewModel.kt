@@ -1,7 +1,9 @@
 package blblblbl.simplelife.main_screen.presentation
 
 import android.content.Context
+import android.location.LocationManager
 import android.widget.Toast
+import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
@@ -18,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -76,26 +79,8 @@ class MainScreenFragmentViewModel @Inject constructor(
     }
 
     private fun searchForecast(query: String, context: Context){
-        _loadState.value = LoadingState.LOADING
         currentRequest?.cancel()
         currentRequest = viewModelScope.launch {
-            /*var job = viewModelScope.launch {
-                try {
-                    val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
-                    _forecast.value = forecast
-                    lastSearchUseCase.saveLast(forecast)
-                }
-                catch (e:Throwable){
-                    Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-            job.join()
-            job = viewModelScope.launch(Dispatchers.IO){
-                _forecast.value?.location?.name?.let { name->
-                    dataBaseUseCase.isCityInFavourites(name)
-                }
-            }
-            job.join()*/
             try {
                 val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
                 _forecast.value = forecast
@@ -118,13 +103,13 @@ class MainScreenFragmentViewModel @Inject constructor(
         }
     }
     fun getForecastByName(context:Context){
+        _loadState.value = LoadingState.LOADING
         searchForecast(_searchQuery.value,context)
     }
     private fun getForecastByLocation(location:Location){
         currentRequest?.cancel()
         currentRequest = viewModelScope.launch {
             val job = viewModelScope.launch {
-                _loadState.value = LoadingState.LOADING
                 val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
                 _forecast.value = forecast
                 _isInFavourites.value = false
@@ -146,20 +131,30 @@ class MainScreenFragmentViewModel @Inject constructor(
     }
     fun locationOnClick(context:Context){
         viewModelScope.launch {
-            try {
-                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-                val cancellation = CancellationTokenSource()
-                val locTask = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY ,cancellation.token)
-                locTask.addOnSuccessListener {location->
-                    getForecastByLocation(Location(longitude = location.longitude, latitude = location.latitude))
-                }
+            _loadState.value = LoadingState.LOADING
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val isLocEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
+            if (!isLocEnabled) {
+                Toast.makeText(context,"enable gps",Toast.LENGTH_SHORT).show()
+                _loadState.value = LoadingState.LOADED
             }
-            catch (e:Throwable){
-                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+            else{
+                try {
+                    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                    val cancellation = CancellationTokenSource()
+                    val locTask = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY ,cancellation.token)
+                    locTask.addOnSuccessListener {location->
+                        getForecastByLocation(Location(longitude = location.longitude, latitude = location.latitude))
+                    }
+                }
+                catch (e:Throwable){
+                    Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
     fun refresh(context:Context){
+        _loadState.value = LoadingState.LOADING
         _forecast.value?.location?.name?.let { searchForecast(it,context) }
     }
 }

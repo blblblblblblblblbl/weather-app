@@ -5,12 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +35,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import blblblbl.simplelife.main_screen.ui.MainScreenFragment
+import blblblbl.simplelife.main_screen.ui.MainScreen
 import blblblbl.simplelife.onboarding.OnBoardingScreen
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
@@ -166,7 +164,7 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(route = MainDest.route) {
-            MainScreenFragment()
+            MainScreen()
         }
         citiesGraph(navController)
         composable(route = AppSettingDest.route) {
