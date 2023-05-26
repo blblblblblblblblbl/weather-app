@@ -236,8 +236,14 @@ fun CityElement(
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "last updated", style = MaterialTheme.typography.bodyMedium)
-                            Text(text = lastUpdated, style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                text = "updated",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1],
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                         IconButton(onClick = {
                             forecast.location?.name?.let { name->
