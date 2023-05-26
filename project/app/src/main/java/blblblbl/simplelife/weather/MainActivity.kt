@@ -20,7 +20,11 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -37,6 +41,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import blblblbl.simplelife.main_screen.ui.MainScreen
 import blblblbl.simplelife.onboarding.OnBoardingScreen
+import blblblbl.simplelife.onboarding.ShowOnBoarding
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
@@ -52,10 +57,15 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var showOnBoarding: ShowOnBoarding
+
     private val viewModel: MainActivityViewModel by viewModels()
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enqueueWidgetsUpdate()
@@ -79,11 +89,16 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    AppScreen(
-                        startDestination = MainDest,
-                        showOnBoarding = false,//(this::showOnBoarding.isInitialized)&&!showOnBoarding.IsShown(),
-                        onBoardingOnClick= {/*showOnBoarding.saveShown()*/}
-                    )
+                    var showApp by remember { mutableStateOf(showOnBoarding.IsShown()) }
+                    if (showApp){
+                        AppScreen()
+                    }
+                    else {
+                        OnBoardingScreen {
+                            showOnBoarding.saveShown()
+                            showApp = true
+                        }
+                    }
                 }
             }
         }
@@ -107,9 +122,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScreen(
-    startDestination: AppDestination = MainDest,
-    showOnBoarding: Boolean = false,
-    onBoardingOnClick:()->Unit = {}
+    startDestination: AppDestination = MainDest
 ){
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -140,9 +153,7 @@ fun AppScreen(
                     coroutineScope.launch {
                         drawerState.open()
                     }
-                },
-                showOnBoarding = showOnBoarding,
-                onBoardingOnClick = onBoardingOnClick
+                }
             )
         }
     }
@@ -155,8 +166,6 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     startDestination:AppDestination = MainDest,
     openMenu: ()->Unit,
-    showOnBoarding: Boolean = false,
-    onBoardingOnClick:()->Unit = {}
 ) {
     NavHost(
         navController = navController,
