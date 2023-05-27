@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import blblblbl.simplelife.settings.domain.model.config.weather.DegreeUnit
 import blblblbl.simplelife.settings.domain.model.config.weather.SpeedUnit
 
+class UIError(val message: String)
+
 @Composable
 fun DropDownCard(
     modifier: Modifier = Modifier,
