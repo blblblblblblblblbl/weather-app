@@ -2,7 +2,6 @@ package blblblbl.simplelife.main_screen.presentation
 
 import android.content.Context
 import android.location.LocationManager
-import android.widget.Toast
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +10,7 @@ import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.DataBaseUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.LastSearchUseCase
+import blblblbl.simplelife.main_screen.ui.UIError
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import com.google.android.gms.location.LocationServices
@@ -51,6 +51,9 @@ class MainScreenFragmentViewModel @Inject constructor(
     private val _isInFavourites = MutableStateFlow<Boolean>(true)
     val isInFavourites = _isInFavourites.asStateFlow()
 
+    private val _errorText = MutableStateFlow<UIError?>(null)
+    val errorText = _errorText.asStateFlow()
+
     var currentRequest :Job? = null
 
     init {
@@ -77,6 +80,9 @@ class MainScreenFragmentViewModel @Inject constructor(
             }
         }
     }
+    private suspend fun showError(message:String){
+        _errorText.value = UIError(message)
+    }
 
     private fun searchForecast(query: String, context: Context){
         currentRequest?.cancel()
@@ -88,7 +94,7 @@ class MainScreenFragmentViewModel @Inject constructor(
                 lastSearchUseCase.saveLast(forecast)
             }
             catch (e:Throwable){
-                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+                e.message?.let { viewModelScope.launch { showError(it) } }
             }
             withContext(Dispatchers.IO){
                 _forecast.value?.location?.name?.let { name->
@@ -135,7 +141,7 @@ class MainScreenFragmentViewModel @Inject constructor(
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val isLocEnabled = LocationManagerCompat.isLocationEnabled(locationManager)
             if (!isLocEnabled) {
-                Toast.makeText(context,"enable gps",Toast.LENGTH_SHORT).show()
+                viewModelScope.launch { showError("enable gps") }
                 _loadState.value = LoadingState.LOADED
             }
             else{
@@ -148,7 +154,7 @@ class MainScreenFragmentViewModel @Inject constructor(
                     }
                 }
                 catch (e:Throwable){
-                    Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+                    e.message?.let { viewModelScope.launch { showError(it) } }
                 }
             }
         }
