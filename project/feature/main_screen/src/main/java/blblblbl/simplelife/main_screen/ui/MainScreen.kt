@@ -173,22 +173,22 @@ fun MainScreen(
         }
 
     }
-    var visible by remember { mutableStateOf<Boolean>(false) }
-    var message by remember { mutableStateOf<String>("") }
     error?.let { error->
-        LaunchedEffect(key1 = error){
-            message = error.message
-            visible = true
-            delay(3000)
-            visible = false
-
-        }
-        ErrorMessage(visible,message)
+        ErrorMessage(error)
     }
 
 }
 @Composable
-private fun ErrorMessage(visible:Boolean,message:String?) {
+private fun ErrorMessage(error:UIError) {
+    var visible by remember { mutableStateOf<Boolean>(false) }
+    var message by remember { mutableStateOf<String>("") }
+    LaunchedEffect(key1 = error){
+        message = error.message
+        visible = true
+        delay(3000)
+        visible = false
+
+    }
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(
