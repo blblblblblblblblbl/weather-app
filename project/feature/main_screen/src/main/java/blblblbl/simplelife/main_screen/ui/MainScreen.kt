@@ -1,6 +1,12 @@
 package blblblbl.simplelife.main_screen.ui
 
 import android.Manifest
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -31,12 +37,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,6 +66,7 @@ import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -68,6 +80,7 @@ fun MainScreen(
     val appConfig by viewModel.settings.collectAsState()
     val loadState by viewModel.loadState.collectAsState()
     val isInFavourites by viewModel.isInFavourites.collectAsState()
+    val error by viewModel.errorText.collectAsState()
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -156,11 +169,51 @@ fun MainScreen(
                     }
                 }
             }
+
         }
+
+    }
+    var visible by remember { mutableStateOf<Boolean>(false) }
+    var message by remember { mutableStateOf<String>("") }
+    error?.let { error->
+        LaunchedEffect(key1 = error){
+            message = error.message
+            visible = true
+            delay(3000)
+            visible = false
+
+        }
+        ErrorMessage(visible,message)
     }
 
 }
-
+@Composable
+private fun ErrorMessage(visible:Boolean,message:String?) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically(
+            initialOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing)
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
+        )
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.errorContainer,
+            tonalElevation = 4.dp
+        ) {
+            message?.let { message->
+                Text(
+                    text = message,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
+}
 @Composable
 fun CurrentWeatherBlock(
     modifier: Modifier = Modifier,
