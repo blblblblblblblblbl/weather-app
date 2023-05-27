@@ -11,7 +11,6 @@ import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.DataBaseUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.LastSearchUseCase
 import blblblbl.simplelife.main_screen.ui.UIError
-import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -19,13 +18,9 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -59,10 +54,17 @@ class MainScreenFragmentViewModel @Inject constructor(
     init {
         getLast()
     }
+    fun checkInFavourites(){
+        viewModelScope.launch(Dispatchers.IO){
+            _forecast.value?.location?.name?.let { name->
+                _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+            }
+        }
+    }
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }
-    fun getLast(){
+    private fun getLast(){
         viewModelScope.launch {
             _forecast.value = lastSearchUseCase.getLast()
             withContext(Dispatchers.IO){
@@ -72,11 +74,19 @@ class MainScreenFragmentViewModel @Inject constructor(
             }
         }
     }
-    fun saveForecastToFavourites(){
+    fun addToFavourites(){
         viewModelScope.launch(Dispatchers.IO) {
             _forecast.value?.let { forecast ->
                 dataBaseUseCase.saveForecast(forecast)
                 _isInFavourites.value = true
+            }
+        }
+    }
+    fun removeFromFavourites(){
+        _isInFavourites.value = false
+        viewModelScope.launch(Dispatchers.IO) {
+            _forecast.value?.location?.name?.let { name ->
+                dataBaseUseCase.removeCity(name)
             }
         }
     }

@@ -1,6 +1,6 @@
 package blblblbl.simplelife.main_screen.ui
 
-import android.Manifest
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -23,8 +23,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +64,6 @@ import blblblbl.simplelife.main_screen.presentation.LoadingState
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.delay
 
@@ -82,25 +81,36 @@ fun MainScreen(
     val isInFavourites by viewModel.isInFavourites.collectAsState()
     val error by viewModel.errorText.collectAsState()
     val context = LocalContext.current
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.checkInFavourites()
+        onDispose {  }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             Box(modifier = Modifier.padding(10.dp)) {
-                SearchWidget(
-                    text = searchQuery,
-                    onTextChange = {
-                        viewModel.updateSearchQuery(query = it)
-                    },
-                    onSearchClicked = {
-                        viewModel.getForecastByName(context)
-                    },
-                    onClearClicked = {
-                        viewModel.updateSearchQuery("")
-                    },
-                    onLocationClicked = {
-                        viewModel.locationOnClick(context)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = {menuOnCLick()}) {
+                        Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
                     }
-                )
+                    SearchWidget(
+                        text = searchQuery,
+                        onTextChange = {
+                            viewModel.updateSearchQuery(query = it)
+                        },
+                        onSearchClicked = {
+                            viewModel.getForecastByName(context)
+                        },
+                        onClearClicked = {
+                            viewModel.updateSearchQuery("")
+                        },
+                        onLocationClicked = {
+                            viewModel.locationOnClick(context)
+                        }
+                    )
+                }
             }
         }
     ) {
@@ -115,16 +125,6 @@ fun MainScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(onClick = {menuOnCLick()}) {
-                        Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
-                    }
-                }
                 appConfig?.weatherConfig?.let { weatherConfig ->
                     forecast?.let { forecast ->
                         CurrentWeatherBlock(
@@ -134,18 +134,29 @@ fun MainScreen(
                             weatherConfig = weatherConfig
                         )
                     }
-                    if (!isInFavourites){
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            IconButton(onClick = {
-                                viewModel.saveForecastToFavourites()
-                            }) {
-                                Icon(Icons.Default.Favorite, contentDescription = "add to favourites button")
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(onClick = {
+                            if (isInFavourites){
+                                viewModel.removeFromFavourites()
                             }
+                            else{
+                                viewModel.addToFavourites()
+                            }
+                        }) {
+                            AnimatedContent(targetState = isInFavourites) {
+                                if (isInFavourites){
+                                    Icon(Icons.Default.Favorite, contentDescription = "favourites button")
+                                }
+                                else{
+                                    Icon(Icons.Default.FavoriteBorder, contentDescription = "favourites button")
+                                }
+                            }
+
                         }
                     }
                     forecast?.forecast?.let { nextDays ->
@@ -173,22 +184,22 @@ fun MainScreen(
         }
 
     }
-    var visible by remember { mutableStateOf<Boolean>(false) }
-    var message by remember { mutableStateOf<String>("") }
     error?.let { error->
-        LaunchedEffect(key1 = error){
-            message = error.message
-            visible = true
-            delay(3000)
-            visible = false
-
-        }
-        ErrorMessage(visible,message)
+        ErrorMessage(error)
     }
 
 }
 @Composable
-private fun ErrorMessage(visible:Boolean,message:String?) {
+private fun ErrorMessage(error:UIError) {
+    var visible by remember { mutableStateOf<Boolean>(false) }
+    var message by remember { mutableStateOf<String>("") }
+    LaunchedEffect(key1 = error){
+        message = error.message
+        visible = true
+        delay(3000)
+        visible = false
+
+    }
     AnimatedVisibility(
         visible = visible,
         enter = slideInVertically(
@@ -349,7 +360,7 @@ fun DayHead(
             Icon(
                 painter = painterResource(id = R.drawable.temperature_icon),
                 contentDescription = "temperature",
-                modifier = Modifier.requiredWidth(20.dp)
+                modifier = Modifier.requiredWidth(14.dp)
             )
             Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
         }

@@ -32,6 +32,9 @@ class MainDBModule{
                 }
             }
 
+            override suspend fun removeCity(name: String) =
+                dbCreator.getDB().cityDao().deleteCity(name)
+
             override suspend fun isCityInFavourites(name:String): Boolean =
                 (dbCreator.getDB().cityDao().getCityForecast(name) != null)
 
