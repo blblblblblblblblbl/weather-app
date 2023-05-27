@@ -5,5 +5,7 @@ import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 interface DataBaseRepository {
     suspend fun saveForecast(forecastResponse: ForecastResponse)
 
+    suspend fun removeCity(name: String)
+
     suspend fun isCityInFavourites(name:String): Boolean
 }

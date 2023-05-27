@@ -1,6 +1,6 @@
 package blblblbl.simplelife.main_screen.ui
 
-import android.Manifest
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -23,8 +23,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,7 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +63,6 @@ import blblblbl.simplelife.main_screen.presentation.LoadingState
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.delay
 
@@ -129,18 +127,29 @@ fun MainScreen(
                             weatherConfig = weatherConfig
                         )
                     }
-                    if (!isInFavourites){
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            IconButton(onClick = {
-                                viewModel.saveForecastToFavourites()
-                            }) {
-                                Icon(Icons.Default.Favorite, contentDescription = "add to favourites button")
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(onClick = {
+                            if (isInFavourites){
+                                viewModel.removeFromFavourites()
                             }
+                            else{
+                                viewModel.addToFavourites()
+                            }
+                        }) {
+                            AnimatedContent(targetState = isInFavourites) {
+                                if (isInFavourites){
+                                    Icon(Icons.Default.Favorite, contentDescription = "favourites button")
+                                }
+                                else{
+                                    Icon(Icons.Default.FavoriteBorder, contentDescription = "favourites button")
+                                }
+                            }
+
                         }
                     }
                     forecast?.forecast?.let { nextDays ->

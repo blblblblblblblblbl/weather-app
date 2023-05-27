@@ -13,6 +13,9 @@ class DataBaseRepositoryImpl @Inject constructor(
     override suspend fun saveForecast(forecastResponse: ForecastResponse) =
         cityDataBase.saveForecast(forecastResponse.mapToData())
 
+    override suspend fun removeCity(name: String) =
+        cityDataBase.removeCity(name)
+
     override suspend fun isCityInFavourites(name: String): Boolean =
         cityDataBase.isCityInFavourites(name)
 }

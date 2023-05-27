@@ -10,6 +10,9 @@ class DataBaseUseCase @Inject constructor(
     suspend fun saveForecast(forecastResponse: ForecastResponse) =
         dataBaseRepository.saveForecast(forecastResponse)
 
+    suspend fun removeCity(name: String) =
+        dataBaseRepository.removeCity(name)
+
     suspend fun isCityInFavourites(name:String): Boolean =
         dataBaseRepository.isCityInFavourites(name)
 }
