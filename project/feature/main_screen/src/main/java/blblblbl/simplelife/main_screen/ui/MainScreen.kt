@@ -86,21 +86,26 @@ fun MainScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             Box(modifier = Modifier.padding(10.dp)) {
-                SearchWidget(
-                    text = searchQuery,
-                    onTextChange = {
-                        viewModel.updateSearchQuery(query = it)
-                    },
-                    onSearchClicked = {
-                        viewModel.getForecastByName(context)
-                    },
-                    onClearClicked = {
-                        viewModel.updateSearchQuery("")
-                    },
-                    onLocationClicked = {
-                        viewModel.locationOnClick(context)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = {menuOnCLick()}) {
+                        Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
                     }
-                )
+                    SearchWidget(
+                        text = searchQuery,
+                        onTextChange = {
+                            viewModel.updateSearchQuery(query = it)
+                        },
+                        onSearchClicked = {
+                            viewModel.getForecastByName(context)
+                        },
+                        onClearClicked = {
+                            viewModel.updateSearchQuery("")
+                        },
+                        onLocationClicked = {
+                            viewModel.locationOnClick(context)
+                        }
+                    )
+                }
             }
         }
     ) {
@@ -115,16 +120,6 @@ fun MainScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(onClick = {menuOnCLick()}) {
-                        Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
-                    }
-                }
                 appConfig?.weatherConfig?.let { weatherConfig ->
                     forecast?.let { forecast ->
                         CurrentWeatherBlock(
