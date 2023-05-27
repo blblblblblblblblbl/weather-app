@@ -261,8 +261,12 @@ fun CityElement(
                         )
                     }
                 }
-                forecast.current?.condition?.text?.let {
-                    Text(it)
+                forecast.current?.condition?.text?.let {text->
+                    Text(
+                        text = text,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
                 }
                 forecast.current?.windKph?.let { windSpeed ->
                     Row(
@@ -274,7 +278,7 @@ fun CityElement(
                             painter = painterResource(R.drawable.wind_icon),
                             contentDescription = "wind"
                         )
-                        Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit))
+                        Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit), style = MaterialTheme.typography.headlineMedium)
                     }
                 }
                 forecast.current?.lastUpdated?.let { lastUpdated ->
@@ -287,12 +291,8 @@ fun CityElement(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "updated",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
                                 text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1],
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.headlineSmall
                             )
                         }
                         IconButton(onClick = {
