@@ -54,6 +54,13 @@ class MainScreenFragmentViewModel @Inject constructor(
     init {
         getLast()
     }
+    fun checkInFavourites(){
+        viewModelScope.launch(Dispatchers.IO){
+            _forecast.value?.location?.name?.let { name->
+                _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+            }
+        }
+    }
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
     }

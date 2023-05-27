@@ -37,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -80,6 +81,12 @@ fun MainScreen(
     val isInFavourites by viewModel.isInFavourites.collectAsState()
     val error by viewModel.errorText.collectAsState()
     val context = LocalContext.current
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.checkInFavourites()
+        onDispose {  }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
