@@ -4,8 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,6 +63,7 @@ import blblblbl.simplelife.cities.presentation.LoadingState
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -68,6 +75,7 @@ fun CitiesFragment(
     val viewModel = hiltViewModel<CitiesFragmentViewModel>()
     val appConfig by viewModel.settings.collectAsState()
     val context = LocalContext.current
+    val error by viewModel.errorText.collectAsState()
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -80,17 +88,52 @@ fun CitiesFragment(
                 weatherConfig = weatherConfig,
                 cityOnClick = onClick,
                 refreshOnClick = {name,loadStateChangeFun->
-                    viewModel.refreshCity(context, name, loadStateChangeFun)
+                    viewModel.refreshCity(name, loadStateChangeFun)
                 },
                 removeOnClick = { name ->
                     viewModel.removeCity(name)
                 }
             )
         }
+    }
+    error?.let { ErrorMessage(error = it) }
+}
+@Composable
+private fun ErrorMessage(error:UIError) {
+    var visible by remember { mutableStateOf<Boolean>(false) }
+    var message by remember { mutableStateOf<String>("") }
+    LaunchedEffect(key1 = error){
+        message = error.message
+        visible = true
+        delay(3000)
+        visible = false
 
     }
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically(
+            initialOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing)
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
+        )
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.errorContainer,
+            tonalElevation = 4.dp
+        ) {
+            message?.let { message->
+                Text(
+                    text = message,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
 }
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CitiesGrid(
@@ -169,6 +212,14 @@ fun CityElement(
 ) {
     var expandMenu by remember { mutableStateOf(false) }
     var loadState by remember { mutableStateOf(LoadingState.LOADED) }
+    LaunchedEffect(true){
+        forecast.location?.name?.let { name->
+            refreshOnClick(
+                name,
+                { loadState = it }
+            )
+        }
+    }
     Card(
         modifier = modifier.combinedClickable(
             onClick = {
@@ -180,7 +231,6 @@ fun CityElement(
         )
     ) {
         Box(modifier = Modifier){
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()

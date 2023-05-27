@@ -8,12 +8,15 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import blblblbl.simplelife.cities.domain.usecase.GetCitiesUseCase
 import blblblbl.simplelife.cities.domain.usecase.SaveForecastUseCase
+import blblblbl.simplelife.cities.ui.UIError
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,6 +32,9 @@ class CitiesFragmentViewModel @Inject constructor(
     val pagedCities: Flow<PagingData<ForecastResponse>> =
         getCitiesUseCase.execute(PAGE_SIZE).cachedIn(viewModelScope)
 
+    private val _errorText = MutableStateFlow<UIError?>(null)
+    val errorText = _errorText.asStateFlow()
+
     val settings = settingsUseCase.getAppConfigFlow()
     fun removeCity(name: String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -36,7 +42,6 @@ class CitiesFragmentViewModel @Inject constructor(
         }
     }
     fun refreshCity(
-        context:Context,
         name:String,
         loadStateChangeFun:(LoadingState)->Unit
     ){
@@ -49,7 +54,7 @@ class CitiesFragmentViewModel @Inject constructor(
                 }
             }
             catch (e:Throwable){
-                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+                e.message?.let { _errorText.value = UIError(it) }
             }
             loadStateChangeFun(LoadingState.LOADED)
         }
