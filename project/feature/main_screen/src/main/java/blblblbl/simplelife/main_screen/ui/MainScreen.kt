@@ -360,7 +360,7 @@ fun DayHead(
             Icon(
                 painter = painterResource(id = R.drawable.temperature_icon),
                 contentDescription = "temperature",
-                modifier = Modifier.requiredWidth(20.dp)
+                modifier = Modifier.requiredWidth(14.dp)
             )
             Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
         }
