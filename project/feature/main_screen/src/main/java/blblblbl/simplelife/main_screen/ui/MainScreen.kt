@@ -94,25 +94,25 @@ fun MainScreen(
         topBar = {
             Box(modifier = Modifier.padding(10.dp)) {
                 Row(verticalAlignment = Alignment.Top) {
-                    IconButton(onClick = {menuOnCLick()}) {
+                    IconButton(onClick = {/*menuOnCLick()*/}) {
                         Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
                     }
                     SearchWidget(
-                        text = searchQuery,
+                        text = "",
                         onTextChange = {
-                            viewModel.updateSearchQuery(query = it)
-                            viewModel.searchCompletions()
+                            /*viewModel.updateSearchQuery(query = it)
+                            viewModel.searchCompletions()*/
                         },
                         onSearchClicked = {
-                            viewModel.getForecastByName(context)
+                            //viewModel.getForecastByName(context)
                         },
                         onClearClicked = {
-                            viewModel.updateSearchQuery("")
+                            //viewModel.updateSearchQuery("")
                         },
                         onLocationClicked = {
-                            viewModel.locationOnClick(context)
+                            //viewModel.locationOnClick(context)
                         },
-                        suggestedVariants = cityVariants?: listOf<String>()
+                        suggestedVariants = listOf<String>()//cityVariants?: listOf<String>()
                     )
                 }
             }
@@ -186,7 +186,30 @@ fun MainScreen(
             }
 
         }
-
+    }
+    Box(modifier = Modifier.padding(10.dp)) {
+        Row(verticalAlignment = Alignment.Top) {
+            IconButton(onClick = {menuOnCLick()}) {
+                Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
+            }
+            SearchWidget(
+                text = searchQuery,
+                onTextChange = {
+                    viewModel.updateSearchQuery(query = it)
+                    viewModel.searchCompletions()
+                },
+                onSearchClicked = {
+                    viewModel.getForecastByName(context)
+                },
+                onClearClicked = {
+                    viewModel.updateSearchQuery("")
+                },
+                onLocationClicked = {
+                    viewModel.locationOnClick(context)
+                },
+                suggestedVariants = cityVariants?: listOf<String>()
+            )
+        }
     }
     error?.let { error->
         ErrorMessage(error)
