@@ -99,6 +99,7 @@ fun MainScreen(
                         text = searchQuery,
                         onTextChange = {
                             viewModel.updateSearchQuery(query = it)
+                            viewModel.searchCompletions()
                         },
                         onSearchClicked = {
                             viewModel.getForecastByName(context)

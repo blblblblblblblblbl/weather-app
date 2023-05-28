@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/autocomplete" />
             <option value="$PROJECT_DIR$/feature/cities" />
             <option value="$PROJECT_DIR$/feature/main_screen" />
             <option value="$PROJECT_DIR$/feature/onboarding" />

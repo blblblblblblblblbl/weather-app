@@ -2,9 +2,11 @@ package blblblbl.simplelife.main_screen.presentation
 
 import android.content.Context
 import android.location.LocationManager
+import android.util.Log
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import blblblbl.simplelife.autocomplete.domain.usecase.SearchCitiesVariantsUseCase
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
@@ -29,7 +31,8 @@ class MainScreenFragmentViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
     private val settingsUseCase: GetAppConfigUseCase,
     private val lastSearchUseCase: LastSearchUseCase,
-    private val dataBaseUseCase: DataBaseUseCase
+    private val dataBaseUseCase: DataBaseUseCase,
+    private val searchCitiesVariantsUseCase: SearchCitiesVariantsUseCase
 ):ViewModel() {
 
     private val _forecast = MutableStateFlow<ForecastResponse?>(null)
@@ -48,6 +51,9 @@ class MainScreenFragmentViewModel @Inject constructor(
 
     private val _errorText = MutableStateFlow<UIError?>(null)
     val errorText = _errorText.asStateFlow()
+
+    private val _cityVariants = MutableStateFlow<List<String>?>(null)
+    val cityVariants = _cityVariants.asStateFlow()
 
     var currentRequest :Job? = null
 
@@ -172,5 +178,14 @@ class MainScreenFragmentViewModel @Inject constructor(
     fun refresh(context:Context){
         _loadState.value = LoadingState.LOADING
         _forecast.value?.location?.name?.let { searchForecast(it,context) }
+    }
+
+    fun searchCompletions(){
+        viewModelScope.launch {
+            try {
+                _cityVariants.value = searchCitiesVariantsUseCase.execute(_searchQuery.value)
+            }
+            catch (e:Throwable){ }
+        }
     }
 }

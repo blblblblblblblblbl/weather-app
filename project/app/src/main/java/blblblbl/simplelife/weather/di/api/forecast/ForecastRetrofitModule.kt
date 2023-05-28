@@ -1,4 +1,4 @@
-package blblblbl.simplelife.weather.di.api
+package blblblbl.simplelife.weather.di.api.forecast
 
 import blblblbl.simplelife.forecast.data.network.ForecastApi
 import dagger.Module

@@ -1,4 +1,4 @@
-package blblblbl.simplelife.weather.di.api
+package blblblbl.simplelife.weather.di.api.forecast
 
 import okhttp3.Interceptor
 import okhttp3.Response
