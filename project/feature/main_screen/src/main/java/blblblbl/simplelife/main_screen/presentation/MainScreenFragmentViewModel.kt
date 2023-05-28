@@ -54,6 +54,7 @@ class MainScreenFragmentViewModel @Inject constructor(
 
     private val _cityVariants = MutableStateFlow<List<String>?>(null)
     val cityVariants = _cityVariants.asStateFlow()
+    private var autoCompleteJob: Job? = null
 
     var currentRequest :Job? = null
 
@@ -181,7 +182,8 @@ class MainScreenFragmentViewModel @Inject constructor(
     }
 
     fun searchCompletions(){
-        viewModelScope.launch {
+        autoCompleteJob?.cancel()
+        autoCompleteJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 _cityVariants.value = searchCitiesVariantsUseCase.execute(_searchQuery.value)
             }

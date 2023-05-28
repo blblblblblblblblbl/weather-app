@@ -8,5 +8,5 @@ class ACDatasourceImpl @Inject constructor(
     private val acApi: ACApi
 ):ACDatasource {
     override suspend fun searchCities(cityName: String): Response =
-        acApi.searchCities(cityName,10,"city")
+        acApi.searchCities(cityName,20,"city")
 }

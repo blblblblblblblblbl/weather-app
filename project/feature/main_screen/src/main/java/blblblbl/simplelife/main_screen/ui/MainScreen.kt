@@ -12,6 +12,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -80,6 +81,7 @@ fun MainScreen(
     val loadState by viewModel.loadState.collectAsState()
     val isInFavourites by viewModel.isInFavourites.collectAsState()
     val error by viewModel.errorText.collectAsState()
+    val cityVariants by viewModel.cityVariants.collectAsState()
     val context = LocalContext.current
 
     DisposableEffect(key1 = viewModel) {
@@ -91,7 +93,7 @@ fun MainScreen(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             Box(modifier = Modifier.padding(10.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.Top) {
                     IconButton(onClick = {menuOnCLick()}) {
                         Icon(Icons.Default.Menu, contentDescription = "menu button",modifier = Modifier.size(48.dp))
                     }
@@ -109,7 +111,8 @@ fun MainScreen(
                         },
                         onLocationClicked = {
                             viewModel.locationOnClick(context)
-                        }
+                        },
+                        suggestedVariants = cityVariants?: listOf<String>()
                     )
                 }
             }

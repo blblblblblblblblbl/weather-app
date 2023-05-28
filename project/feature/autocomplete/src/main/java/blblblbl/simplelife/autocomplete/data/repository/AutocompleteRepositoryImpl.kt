@@ -10,6 +10,6 @@ class AutocompleteRepositoryImpl @Inject constructor(
 ):AutocompleteRepository {
     override suspend fun searchCities(cityName: String): List<String> {
         val apiResponse = acDatasource.searchCities(cityName).results.filter { it.city!=null }
-        return apiResponse.map { it.city!! }
+        return apiResponse.map { it.city!! }.distinct()
     }
 }
