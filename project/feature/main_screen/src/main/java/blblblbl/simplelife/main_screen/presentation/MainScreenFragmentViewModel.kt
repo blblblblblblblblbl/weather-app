@@ -105,7 +105,7 @@ class MainScreenFragmentViewModel @Inject constructor(
         currentRequest?.cancel()
         currentRequest = viewModelScope.launch {
             try {
-                val forecast = getForecastUseCase.getForecastByName(query,7,"no","no")
+                val forecast = getForecastUseCase.getForecastByName(query,7,"yes","yes")
                 _forecast.value = forecast
                 _isInFavourites.value = false
                 lastSearchUseCase.saveLast(forecast)
@@ -133,7 +133,7 @@ class MainScreenFragmentViewModel @Inject constructor(
         currentRequest?.cancel()
         currentRequest = viewModelScope.launch {
             val job = viewModelScope.launch {
-                val forecast = getForecastUseCase.getForecastByLoc(location,7,"no","no")
+                val forecast = getForecastUseCase.getForecastByLoc(location,7,"yes","yes")
                 _forecast.value = forecast
                 _isInFavourites.value = false
                 lastSearchUseCase.saveLast(forecast)

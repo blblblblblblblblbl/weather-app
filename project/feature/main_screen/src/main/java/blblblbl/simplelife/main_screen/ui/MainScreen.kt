@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,13 +48,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import blblblbl.simplelife.forecast.domain.model.forecast.AirQuality
+import blblblbl.simplelife.forecast.domain.model.forecast.Alerts
 import blblblbl.simplelife.forecast.domain.model.forecast.Astro
 import blblblbl.simplelife.forecast.domain.model.forecast.Day
 import blblblbl.simplelife.forecast.domain.model.forecast.Forecast
@@ -129,6 +135,12 @@ fun MainScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                forecast?.alerts?.let { alerts->
+                    AlertsBlock(
+                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        alerts = alerts
+                    )
+                }
                 appConfig?.weatherConfig?.let { weatherConfig ->
                     forecast?.let { forecast ->
                         CurrentWeatherBlock(
@@ -253,6 +265,27 @@ private fun ErrorMessage(error:UIError) {
     }
 }
 @Composable
+fun AlertsBlock(
+    modifier: Modifier = Modifier,
+    alerts: Alerts
+){
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.error
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            alerts.alert.forEach{alert->
+                alert.event?.let { Text(text = it) }
+            }
+        }
+    }
+}
+@Composable
 fun CurrentWeatherBlock(
     modifier: Modifier = Modifier,
     forecast: ForecastResponse,
@@ -289,7 +322,7 @@ fun CurrentWeatherBlock(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    forecast.current?.condition?.text?.let { Text(text = it) }
+                    forecast.current?.condition?.text?.let { Text(text = it, textAlign = TextAlign.Center) }
                     forecast.current?.condition?.icon?.let {
                         GlideImage(
                             imageModel = { "https:" + it },
@@ -384,28 +417,44 @@ fun DayHead(
             Text(text = "${it.subSequence(8, 10)}.${it.subSequence(5, 7)}",fontWeight = FontWeight.Bold)
         }
         day.day?.avgtempC?.let {
-            Icon(
-                painter = painterResource(id = R.drawable.temperature_icon),
-                contentDescription = "temperature",
-                modifier = Modifier.requiredWidth(14.dp)
-            )
-            Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.temperature_icon),
+                    contentDescription = "temperature",
+                    modifier = Modifier.requiredWidth(14.dp)
+                )
+                Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
+            }
+
         }
         day.day?.maxwindKph?.let { wind ->
-            Icon(
-                painter = painterResource(id = R.drawable.wind_icon),
-                contentDescription = "wind speed",
-                modifier = Modifier.requiredWidth(24.dp)
-            )
-            Text(text = speedInUnits(wind,weatherConfig.speedUnit))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Icon(
+                    painter = painterResource(id = R.drawable.wind_icon),
+                    contentDescription = "wind speed",
+                    modifier = Modifier.requiredWidth(24.dp)
+                )
+                Text(text = speedInUnits(wind,weatherConfig.speedUnit))
+            }
         }
         day.day?.dailyChanceOfRain?.let { rain ->
-            Icon(
-                painter = painterResource(id = R.drawable.rain_icon),
-                contentDescription = "rain chance",
-                modifier = Modifier.requiredWidth(24.dp)
-            )
-            Text(text = "${rain}%")
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Icon(
+                    painter = painterResource(id = R.drawable.rain_icon),
+                    contentDescription = "rain chance",
+                    modifier = Modifier.requiredWidth(24.dp)
+                )
+                Text(text = "${rain}%")
+            }
         }
     }
 }
@@ -442,53 +491,80 @@ fun HourCard(
     hour: Hour,
     weatherConfig: WeatherConfig
 ){
+    var expanded by remember { mutableStateOf(false) }
     Card(
+        shape = MaterialTheme.shapes.large,
         modifier = modifier
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.outline,
                 shape = MaterialTheme.shapes.large
-            ),
-        shape = MaterialTheme.shapes.large,
+            )
+            .clip(MaterialTheme.shapes.large)
+            .clickable { expanded = !expanded },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .padding(4.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            hour.time?.let {
-                Text(text = it.substring(11))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                hour.time?.let {
+                    Text(text = it.substring(11))
+                }
+                hour.tempC?.let {
+                    Text(
+                        text = temepatureInUnits(it,weatherConfig.degreeUnit),
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
+                hour.condition?.icon?.let {
+                    GlideImage(
+                        imageModel = { "https:" + it },
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+                hour.windKph?.let {wind->
+                    Icon(
+                        painter = painterResource(id = R.drawable.wind_icon),
+                        contentDescription = "wind speed",
+                        modifier = Modifier.requiredHeight(24.dp)
+                    )
+                    Text(text = speedInUnits(wind,weatherConfig.speedUnit))
+                }
+                hour.chanceOfRain?.let { rain ->
+                    Icon(
+                        painter = painterResource(id = R.drawable.rain_icon),
+                        contentDescription = "rain chance",
+                        modifier = Modifier.requiredHeight(24.dp)
+                    )
+                    Text(text = "${rain}%")
+                }
             }
-            hour.tempC?.let {
-                Text(
-                    text = temepatureInUnits(it,weatherConfig.degreeUnit),
-                    style = MaterialTheme.typography.headlineLarge
-                )
-            }
-            hour.condition?.icon?.let {
-                GlideImage(
-                    imageModel = { "https:" + it },
-                    modifier = Modifier.size(48.dp)
-                )
-            }
-            hour.windKph?.let {wind->
-                Icon(
-                    painter = painterResource(id = R.drawable.wind_icon),
-                    contentDescription = "wind speed",
-                    modifier = Modifier.requiredHeight(24.dp)
-                )
-                Text(text = speedInUnits(wind,weatherConfig.speedUnit))
-            }
-            hour.chanceOfRain?.let { rain ->
-                Icon(
-                    painter = painterResource(id = R.drawable.rain_icon),
-                    contentDescription = "rain chance",
-                    modifier = Modifier.requiredHeight(24.dp)
-                )
-                Text(text = "${rain}%")
+            AnimatedVisibility(visible = expanded) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    hour.humidity?.let {
+                        Icon(painter = painterResource(id = R.drawable.humidity_icon), contentDescription = "humidity",modifier = Modifier.size(44.dp))
+                        Text(text = "$it%")
+                    }
+                    hour.windDir?.let {
+                        Icon(painter = painterResource(id = R.drawable.wind_direction_icon), contentDescription = "wind direction",modifier = Modifier.size(44.dp))
+                        Text(text = it)
+                    }
+                    hour.uv?.let {
+                        Icon(painter = painterResource(id = R.drawable.uv_icon), contentDescription = "uv",modifier = Modifier.size(44.dp))
+                        Text(text = it.toString())
+                    }
+                }
             }
         }
     }
@@ -517,9 +593,18 @@ fun DetailedDayInfo(
                 astro = it
             )
         }
+        forecastday.day?.airQuality?.let {
+            if (it!=AirQuality()){
+                AirQualityBlock(
+                    modifier = Modifier.fillMaxWidth(),
+                    airQuality = it
+                )
+            }
+        }
     }
 
 }
+
 @Composable
 fun DayBlock(
     modifier: Modifier = Modifier,
@@ -611,7 +696,8 @@ fun AstroBlock(
         shape = MaterialTheme.shapes.large
     ) {
        Row(
-           horizontalArrangement = Arrangement.SpaceAround
+           horizontalArrangement = Arrangement.SpaceAround,
+           modifier = Modifier.padding(6.dp)
        ) {
            Column() {
                val sunrise = astro.sunrise
@@ -681,5 +767,74 @@ fun AstroBlock(
                }
            }
        }
+    }
+}
+
+@Composable
+fun AirQualityBlock(
+    modifier: Modifier = Modifier,
+    airQuality: AirQuality,
+){
+    Surface(
+        modifier = modifier, 
+        shape = MaterialTheme.shapes.large
+    ) {
+        val textStyle = MaterialTheme.typography.bodyLarge
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(text = "Air quality, content in μg/m3")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    airQuality.co?.let { co->
+                        Text(text = "CO ${co.format(2)}", style = textStyle)
+                    }
+                    airQuality.o3?.let { o3->
+                        Text(text = "O3 ${o3.format(2)}", style = textStyle)
+                    }
+                    airQuality.pm2_5?.let { pm2_5->
+                        Text(text = "PM2.5 ${pm2_5.format(2)}", style = textStyle)
+                    }
+                }
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    airQuality.no2?.let { no2->
+                        Text(text = "NO2 ${no2.format(2)}", style = textStyle)
+                    }
+                    airQuality.so2?.let { so2->
+                        Text(text = "SO2 ${so2.format(2)}", style = textStyle)
+                    }
+                    airQuality.pm10?.let { pm10->
+                        Text(text = "PM10 ${pm10.format(2)}", style = textStyle)
+                    }
+                }
+
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(30.dp)
+            ) {
+                airQuality.usEpaIndex?.let {
+                    Text(text = "US EPA ${it}", style = textStyle)
+                }
+                airQuality.gbDefraIndex?.let {
+                    Text(text = "GB DEFRA ${it}", style = textStyle)
+                }
+            }
+
+        }
     }
 }
