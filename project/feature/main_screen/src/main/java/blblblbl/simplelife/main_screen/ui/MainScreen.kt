@@ -149,30 +149,30 @@ fun MainScreen(
                             refreshOnClick = {viewModel.refresh(context)},
                             weatherConfig = weatherConfig
                         )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        IconButton(onClick = {
-                            if (isInFavourites){
-                                viewModel.removeFromFavourites()
-                            }
-                            else{
-                                viewModel.addToFavourites()
-                            }
-                        }) {
-                            AnimatedContent(targetState = isInFavourites) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            IconButton(onClick = {
                                 if (isInFavourites){
-                                    Icon(Icons.Default.Favorite, contentDescription = "favourites button")
+                                    viewModel.removeFromFavourites()
                                 }
                                 else{
-                                    Icon(Icons.Default.FavoriteBorder, contentDescription = "favourites button")
+                                    viewModel.addToFavourites()
                                 }
-                            }
+                            }) {
+                                AnimatedContent(targetState = isInFavourites) {
+                                    if (isInFavourites){
+                                        Icon(Icons.Default.Favorite, contentDescription = "favourites button")
+                                    }
+                                    else{
+                                        Icon(Icons.Default.FavoriteBorder, contentDescription = "favourites button")
+                                    }
+                                }
 
+                            }
                         }
                     }
                     forecast?.forecast?.let { nextDays ->
@@ -269,21 +269,24 @@ fun AlertsBlock(
     modifier: Modifier = Modifier,
     alerts: Alerts
 ){
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.error
-    ) {
-        Column(
-            modifier = Modifier.padding(10.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    if(alerts.alert.isNotEmpty()){
+        Surface(
+            modifier = modifier,
+            shape = MaterialTheme.shapes.large,
+            color = MaterialTheme.colorScheme.error
         ) {
-            alerts.alert.forEach{alert->
-                alert.event?.let { Text(text = it) }
+            Column(
+                modifier = Modifier.padding(10.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                alerts.alert.forEach{alert->
+                    alert.event?.let { Text(text = it) }
+                }
             }
         }
     }
+
 }
 @Composable
 fun CurrentWeatherBlock(
