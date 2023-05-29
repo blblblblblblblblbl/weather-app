@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import blblblbl.simplelife.forecast.domain.model.forecast.AirQuality
+import blblblbl.simplelife.forecast.domain.model.forecast.Alerts
 import blblblbl.simplelife.forecast.domain.model.forecast.Astro
 import blblblbl.simplelife.forecast.domain.model.forecast.Day
 import blblblbl.simplelife.forecast.domain.model.forecast.Forecast
@@ -134,6 +135,12 @@ fun MainScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                forecast?.alerts?.let { alerts->
+                    AlertsBlock(
+                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        alerts = alerts
+                    )
+                }
                 appConfig?.weatherConfig?.let { weatherConfig ->
                     forecast?.let { forecast ->
                         CurrentWeatherBlock(
@@ -258,6 +265,27 @@ private fun ErrorMessage(error:UIError) {
     }
 }
 @Composable
+fun AlertsBlock(
+    modifier: Modifier = Modifier,
+    alerts: Alerts
+){
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.error
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            alerts.alert.forEach{alert->
+                alert.event?.let { Text(text = it) }
+            }
+        }
+    }
+}
+@Composable
 fun CurrentWeatherBlock(
     modifier: Modifier = Modifier,
     forecast: ForecastResponse,
@@ -294,7 +322,7 @@ fun CurrentWeatherBlock(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    forecast.current?.condition?.text?.let { Text(text = it) }
+                    forecast.current?.condition?.text?.let { Text(text = it, textAlign = TextAlign.Center) }
                     forecast.current?.condition?.icon?.let {
                         GlideImage(
                             imageModel = { "https:" + it },
@@ -576,6 +604,7 @@ fun DetailedDayInfo(
     }
 
 }
+
 @Composable
 fun DayBlock(
     modifier: Modifier = Modifier,
