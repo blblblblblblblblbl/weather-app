@@ -48,13 +48,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import blblblbl.simplelife.forecast.domain.model.forecast.AirQuality
 import blblblbl.simplelife.forecast.domain.model.forecast.Astro
 import blblblbl.simplelife.forecast.domain.model.forecast.Day
 import blblblbl.simplelife.forecast.domain.model.forecast.Forecast
@@ -461,14 +465,15 @@ fun HourCard(
 ){
     var expanded by remember { mutableStateOf(false) }
     Card(
+        shape = MaterialTheme.shapes.large,
         modifier = modifier
-            .clickable { expanded = !expanded }
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.outline,
                 shape = MaterialTheme.shapes.large
-            ),
-        shape = MaterialTheme.shapes.large,
+            )
+            .clip(MaterialTheme.shapes.large)
+            .clickable { expanded = !expanded },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
@@ -559,6 +564,14 @@ fun DetailedDayInfo(
                 modifier = Modifier.fillMaxWidth(),
                 astro = it
             )
+        }
+        forecastday.day?.airQuality?.let {
+            if (it!=AirQuality()){
+                AirQualityBlock(
+                    modifier = Modifier.fillMaxWidth(),
+                    airQuality = it
+                )
+            }
         }
     }
 
@@ -654,7 +667,8 @@ fun AstroBlock(
         shape = MaterialTheme.shapes.large
     ) {
        Row(
-           horizontalArrangement = Arrangement.SpaceAround
+           horizontalArrangement = Arrangement.SpaceAround,
+           modifier = Modifier.padding(6.dp)
        ) {
            Column() {
                val sunrise = astro.sunrise
@@ -724,5 +738,74 @@ fun AstroBlock(
                }
            }
        }
+    }
+}
+
+@Composable
+fun AirQualityBlock(
+    modifier: Modifier = Modifier,
+    airQuality: AirQuality,
+){
+    Surface(
+        modifier = modifier, 
+        shape = MaterialTheme.shapes.large
+    ) {
+        val textStyle = MaterialTheme.typography.bodyLarge
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(text = "Air quality, content in μg/m3")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    airQuality.co?.let { co->
+                        Text(text = "CO ${co.format(2)}", style = textStyle)
+                    }
+                    airQuality.o3?.let { o3->
+                        Text(text = "O3 ${o3.format(2)}", style = textStyle)
+                    }
+                    airQuality.pm2_5?.let { pm2_5->
+                        Text(text = "PM2.5 ${pm2_5.format(2)}", style = textStyle)
+                    }
+                }
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    airQuality.no2?.let { no2->
+                        Text(text = "NO2 ${no2.format(2)}", style = textStyle)
+                    }
+                    airQuality.so2?.let { so2->
+                        Text(text = "SO2 ${so2.format(2)}", style = textStyle)
+                    }
+                    airQuality.pm10?.let { pm10->
+                        Text(text = "PM10 ${pm10.format(2)}", style = textStyle)
+                    }
+                }
+
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(30.dp)
+            ) {
+                airQuality.usEpaIndex?.let {
+                    Text(text = "US EPA ${it}", style = textStyle)
+                }
+                airQuality.gbDefraIndex?.let {
+                    Text(text = "GB DEFRA ${it}", style = textStyle)
+                }
+            }
+
+        }
     }
 }
