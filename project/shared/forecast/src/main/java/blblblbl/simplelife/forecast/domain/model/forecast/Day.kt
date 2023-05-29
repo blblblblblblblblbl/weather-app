@@ -1,6 +1,5 @@
 package blblblbl.simplelife.forecast.domain.model.forecast
 
-import blblblbl.simplelife.forecast.domain.model.forecast.AirQuality
 import com.google.gson.annotations.SerializedName
 
 

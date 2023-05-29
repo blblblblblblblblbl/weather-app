@@ -16,6 +16,12 @@ import blblblbl.simplelife.forecast.domain.model.forecast.Forecastday as DomainF
 import blblblbl.simplelife.forecast.data.model.forecast.Forecast as DataForecast
 import blblblbl.simplelife.forecast.domain.model.forecast.Forecast as DomainForecast
 
+import blblblbl.simplelife.forecast.data.model.forecast.Alerts as DataAlerts
+import blblblbl.simplelife.forecast.domain.model.forecast.Alerts as DomainAlerts
+
+import blblblbl.simplelife.forecast.data.model.forecast.Alert as DataAlert
+import blblblbl.simplelife.forecast.domain.model.forecast.Alert as DomainAlert
+
 import blblblbl.simplelife.forecast.data.model.forecast.Condition as DataCondition
 import blblblbl.simplelife.forecast.domain.model.forecast.Condition as DomainCondition
 
@@ -126,6 +132,20 @@ fun DataForecast.mapToDomain(): DomainForecast {
     return domainForeCast
 }
 
+fun DataAlerts.mapToDomain():DomainAlerts{
+    val DomainAlerts = DomainAlerts(
+        alert = ArrayList(alert.map { it.mapToDomain() })
+    )
+    return DomainAlerts
+}
+
+fun DataAlert.mapToDomain():DomainAlert{
+    val DomainAlert = DomainAlert(
+        headline, msgtype, severity, urgency, areas, category, certainty, event, note, effective, expires, desc, instruction
+    )
+    return DomainAlert
+}
+
 fun DataCondition.mapToDomain(): DomainCondition {
     val domainCondition = DomainCondition(
         text, icon, code
@@ -179,7 +199,8 @@ fun DataForecastResponse.mapToDomain(): DomainForecastResponse{
     val domainForecastResponse = DomainForecastResponse(
         location?.mapToDomain(),
         current?.mapToDomain(),
-        forecast?.mapToDomain()
+        forecast?.mapToDomain(),
+        alerts?.mapToDomain()
     )
     return domainForecastResponse
 }
@@ -283,7 +304,19 @@ fun DomainForecast.mapToData(): DataForecast {
     )
     return DataForeCast
 }
+fun DomainAlerts.mapToData():DataAlerts{
+    val DataAlerts = DataAlerts(
+        alert = ArrayList(alert.map { it.mapToData() })
+    )
+    return DataAlerts
+}
 
+fun DomainAlert.mapToData():DataAlert{
+    val DataAlert = DataAlert(
+        headline, msgtype, severity, urgency, areas, category, certainty, event, note, effective, expires, desc, instruction
+    )
+    return DataAlert
+}
 fun DomainCondition.mapToData(): DataCondition {
     val DataCondition = DataCondition(
         text, icon, code
@@ -337,7 +370,8 @@ fun DomainForecastResponse.mapToData(): DataForecastResponse{
     val DataForecastResponse = DataForecastResponse(
         location?.mapToData(),
         current?.mapToData(),
-        forecast?.mapToData()
+        forecast?.mapToData(),
+        alerts?.mapToData()
     )
     return DataForecastResponse
 }
