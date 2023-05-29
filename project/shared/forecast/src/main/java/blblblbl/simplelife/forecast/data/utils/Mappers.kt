@@ -19,6 +19,9 @@ import blblblbl.simplelife.forecast.domain.model.forecast.Forecast as DomainFore
 import blblblbl.simplelife.forecast.data.model.forecast.Condition as DataCondition
 import blblblbl.simplelife.forecast.domain.model.forecast.Condition as DomainCondition
 
+import blblblbl.simplelife.forecast.data.model.forecast.AirQuality as DataAirQuality
+import blblblbl.simplelife.forecast.domain.model.forecast.AirQuality as DomainAirQuality
+
 import blblblbl.simplelife.forecast.data.model.forecast.Current as DataCurrent
 import blblblbl.simplelife.forecast.domain.model.forecast.Current as DomainCurrent
 
@@ -99,7 +102,8 @@ fun DataDay.mapToDomain(): DomainDay {
         dailyWillItSnow,
         dailyChanceOfSnow,
         condition?.mapToDomain(),
-        uv
+        uv,
+        airQuality?.mapToDomain()
     )
     return domainDay
 }
@@ -127,6 +131,12 @@ fun DataCondition.mapToDomain(): DomainCondition {
         text, icon, code
     )
     return domainCondition
+}
+fun DataAirQuality.mapToDomain(): DomainAirQuality {
+    val DomainAirQuality = DomainAirQuality(
+        co, no2, o3, so2, pm2_5, pm10, usEpaIndex, gbDefraIndex
+    )
+    return DomainAirQuality
 }
 
 fun DataCurrent.mapToDomain(): DomainCurrent {
@@ -250,7 +260,8 @@ fun DomainDay.mapToData(): DataDay {
         dailyWillItSnow,
         dailyChanceOfSnow,
         condition?.mapToData(),
-        uv
+        uv,
+        airQuality?.mapToData()
     )
     return DataDay
 }
@@ -278,6 +289,12 @@ fun DomainCondition.mapToData(): DataCondition {
         text, icon, code
     )
     return DataCondition
+}
+fun DomainAirQuality.mapToData(): DataAirQuality {
+    val DataAirQuality = DataAirQuality(
+        co, no2, o3, so2, pm2_5, pm10, usEpaIndex, gbDefraIndex
+    )
+    return DataAirQuality
 }
 
 fun DomainCurrent.mapToData(): DataCurrent {
