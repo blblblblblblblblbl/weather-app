@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -384,28 +385,44 @@ fun DayHead(
             Text(text = "${it.subSequence(8, 10)}.${it.subSequence(5, 7)}",fontWeight = FontWeight.Bold)
         }
         day.day?.avgtempC?.let {
-            Icon(
-                painter = painterResource(id = R.drawable.temperature_icon),
-                contentDescription = "temperature",
-                modifier = Modifier.requiredWidth(14.dp)
-            )
-            Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.temperature_icon),
+                    contentDescription = "temperature",
+                    modifier = Modifier.requiredWidth(14.dp)
+                )
+                Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
+            }
+
         }
         day.day?.maxwindKph?.let { wind ->
-            Icon(
-                painter = painterResource(id = R.drawable.wind_icon),
-                contentDescription = "wind speed",
-                modifier = Modifier.requiredWidth(24.dp)
-            )
-            Text(text = speedInUnits(wind,weatherConfig.speedUnit))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Icon(
+                    painter = painterResource(id = R.drawable.wind_icon),
+                    contentDescription = "wind speed",
+                    modifier = Modifier.requiredWidth(24.dp)
+                )
+                Text(text = speedInUnits(wind,weatherConfig.speedUnit))
+            }
         }
         day.day?.dailyChanceOfRain?.let { rain ->
-            Icon(
-                painter = painterResource(id = R.drawable.rain_icon),
-                contentDescription = "rain chance",
-                modifier = Modifier.requiredWidth(24.dp)
-            )
-            Text(text = "${rain}%")
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Icon(
+                    painter = painterResource(id = R.drawable.rain_icon),
+                    contentDescription = "rain chance",
+                    modifier = Modifier.requiredWidth(24.dp)
+                )
+                Text(text = "${rain}%")
+            }
         }
     }
 }
@@ -442,8 +459,10 @@ fun HourCard(
     hour: Hour,
     weatherConfig: WeatherConfig
 ){
+    var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = modifier
+            .clickable { expanded = !expanded }
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.outline,
@@ -452,43 +471,67 @@ fun HourCard(
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .padding(4.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            hour.time?.let {
-                Text(text = it.substring(11))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                hour.time?.let {
+                    Text(text = it.substring(11))
+                }
+                hour.tempC?.let {
+                    Text(
+                        text = temepatureInUnits(it,weatherConfig.degreeUnit),
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
+                hour.condition?.icon?.let {
+                    GlideImage(
+                        imageModel = { "https:" + it },
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+                hour.windKph?.let {wind->
+                    Icon(
+                        painter = painterResource(id = R.drawable.wind_icon),
+                        contentDescription = "wind speed",
+                        modifier = Modifier.requiredHeight(24.dp)
+                    )
+                    Text(text = speedInUnits(wind,weatherConfig.speedUnit))
+                }
+                hour.chanceOfRain?.let { rain ->
+                    Icon(
+                        painter = painterResource(id = R.drawable.rain_icon),
+                        contentDescription = "rain chance",
+                        modifier = Modifier.requiredHeight(24.dp)
+                    )
+                    Text(text = "${rain}%")
+                }
             }
-            hour.tempC?.let {
-                Text(
-                    text = temepatureInUnits(it,weatherConfig.degreeUnit),
-                    style = MaterialTheme.typography.headlineLarge
-                )
-            }
-            hour.condition?.icon?.let {
-                GlideImage(
-                    imageModel = { "https:" + it },
-                    modifier = Modifier.size(48.dp)
-                )
-            }
-            hour.windKph?.let {wind->
-                Icon(
-                    painter = painterResource(id = R.drawable.wind_icon),
-                    contentDescription = "wind speed",
-                    modifier = Modifier.requiredHeight(24.dp)
-                )
-                Text(text = speedInUnits(wind,weatherConfig.speedUnit))
-            }
-            hour.chanceOfRain?.let { rain ->
-                Icon(
-                    painter = painterResource(id = R.drawable.rain_icon),
-                    contentDescription = "rain chance",
-                    modifier = Modifier.requiredHeight(24.dp)
-                )
-                Text(text = "${rain}%")
+            AnimatedVisibility(visible = expanded) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    hour.humidity?.let {
+                        Icon(painter = painterResource(id = R.drawable.humidity_icon), contentDescription = "humidity",modifier = Modifier.size(44.dp))
+                        Text(text = "$it%")
+                    }
+                    hour.windDir?.let {
+                        Icon(painter = painterResource(id = R.drawable.wind_direction_icon), contentDescription = "wind direction",modifier = Modifier.size(44.dp))
+                        Text(text = it)
+                    }
+                    hour.uv?.let {
+                        Icon(painter = painterResource(id = R.drawable.uv_icon), contentDescription = "uv",modifier = Modifier.size(44.dp))
+                        Text(text = it.toString())
+                    }
+                }
             }
         }
     }
