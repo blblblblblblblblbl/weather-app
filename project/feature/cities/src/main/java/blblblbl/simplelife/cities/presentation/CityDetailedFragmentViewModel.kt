@@ -1,12 +1,12 @@
 package blblblbl.simplelife.cities.presentation
 
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import blblblbl.simplelife.cities.domain.usecase.GetCitiesUseCase
 import blblblbl.simplelife.cities.domain.usecase.GetForecastDBUseCase
 import blblblbl.simplelife.cities.domain.usecase.SaveForecastUseCase
+import blblblbl.simplelife.cities.ui.UIError
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
@@ -33,6 +33,8 @@ class CityDetailedFragmentViewModel @Inject constructor(
     private val _loadState = MutableStateFlow<LoadingState>(LoadingState.LOADED)
     val loadState = _loadState.asStateFlow()
 
+    private val _errorText = MutableStateFlow<UIError?>(null)
+    val errorText = _errorText.asStateFlow()
     fun getDBForecast(name:String){
         viewModelScope.launch(Dispatchers.IO){
             _forecast.value = getForecastDBUseCase.getForecast(name)
@@ -55,7 +57,9 @@ class CityDetailedFragmentViewModel @Inject constructor(
                 }
             }
             catch (e:Throwable){
-                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+                e.message?.let { message->
+                    _errorText.value = UIError(message)
+                }
             }
             _loadState.value = LoadingState.LOADED
         }
