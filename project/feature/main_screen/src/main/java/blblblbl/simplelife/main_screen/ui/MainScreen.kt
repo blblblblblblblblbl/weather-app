@@ -215,6 +215,7 @@ fun MainScreen(
                 },
                 onClearClicked = {
                     viewModel.updateSearchQuery("")
+                    viewModel.clearCompletions()
                 },
                 onLocationClicked = {
                     viewModel.locationOnClick(context)

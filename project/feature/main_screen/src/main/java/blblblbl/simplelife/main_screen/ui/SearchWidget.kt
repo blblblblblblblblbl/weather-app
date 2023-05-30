@@ -1,6 +1,7 @@
 package blblblbl.simplelife.main_screen.ui
 
 import android.Manifest
+import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
@@ -115,11 +116,7 @@ fun SearchWidget(
                                 contentDescription = "CloseButton"
                             },
                         onClick = {
-                            if (text.isNotEmpty()) {
-                                onTextChange("")
-                            } else {
-                                onClearClicked()
-                            }
+                            onClearClicked()
                         }
                     ) {
                         Icon(
@@ -131,10 +128,16 @@ fun SearchWidget(
                 },
                 trailingIcon = {
                     Row() {
-                        LocationButton {onLocationClicked()}
+                        LocationButton {
+                            onLocationClicked()
+                            focusManager.clearFocus()
+                        }
                         IconButton(
                             modifier = Modifier,
-                            onClick = {onSearchClicked(text)}
+                            onClick = {
+                                onSearchClicked(text)
+                                focusManager.clearFocus()
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
@@ -170,6 +173,8 @@ fun SearchWidget(
                                 .fillMaxWidth()
                                 .clickable {
                                     onTextChange(item)
+                                    onSearchClicked(item)
+                                    focusManager.clearFocus()
                                 }
                         ) {
                             Text(modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp),text = item)
