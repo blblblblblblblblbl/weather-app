@@ -9,6 +9,7 @@ import blblblbl.simplelife.settings.domain.model.config.theme.ThemeMode
 import blblblbl.simplelife.settings.domain.model.config.weather.DegreeUnit
 import blblblbl.simplelife.settings.domain.model.config.weather.SpeedUnit
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
+import blblblbl.simplelife.settings.domain.model.config.widget.WidgetConfig
 import blblblbl.simplelife.settings.domain.repository.AppConfigRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,8 @@ class AppConfigRepositoryImpl @Inject constructor(
             weatherConfig = WeatherConfig(
                 degreeUnit = DegreeUnit.C,
                 speedUnit = SpeedUnit.Ms
-            )
+            ),
+            widgetConfig = WidgetConfig(updateTime = 60)
         )
         return config
     }

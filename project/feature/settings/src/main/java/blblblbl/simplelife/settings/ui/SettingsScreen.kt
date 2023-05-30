@@ -57,6 +57,15 @@ fun SettingsScreen(
                     saveConfig(config.copy(weatherConfig = it)) }
             )
         }
+        config?.widgetConfig?.let { widgetConfig->
+            WidgetConfigPicker(
+                modifier = Modifier.padding(20.dp),
+                initial = widgetConfig,
+                setConfig = {
+                    saveConfig(config.copy(widgetConfig = it))
+                }
+            )
+        }
     }
 }
 

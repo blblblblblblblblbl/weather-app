@@ -15,7 +15,9 @@ import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig as
 //app
 import blblblbl.simplelife.settings.data.model.config.AppConfig as DataAppConfig
 import blblblbl.simplelife.settings.domain.model.config.AppConfig as DomainAppConfig
-
+//widget
+import blblblbl.simplelife.settings.data.model.config.widget.WidgetConfig as DataWidgetConfig
+import blblblbl.simplelife.settings.domain.model.config.widget.WidgetConfig as DomainWidgetConfig
 
 
 //theme
@@ -109,7 +111,8 @@ fun DomainWeatherConfig.mapToData():DataWeatherConfig{
 fun DataAppConfig.mapToDomain():DomainAppConfig{
     val domainAppConfig = DomainAppConfig(
         themeConfig = this.themeConfig.mapToDomain(),
-        weatherConfig = this.weatherConfig.mapToDomain()
+        weatherConfig = this.weatherConfig.mapToDomain(),
+        widgetConfig = widgetConfig.mapToDomain()
     )
     return domainAppConfig
 }
@@ -117,7 +120,21 @@ fun DataAppConfig.mapToDomain():DomainAppConfig{
 fun DomainAppConfig.mapToData():DataAppConfig{
     val DataAppConfig = DataAppConfig(
         themeConfig = this.themeConfig.mapToData(),
-        weatherConfig = this.weatherConfig.mapToData()
+        weatherConfig = this.weatherConfig.mapToData(),
+        widgetConfig = widgetConfig.mapToData()
     )
     return DataAppConfig
+}
+//widget
+fun DataWidgetConfig.mapToDomain():DomainWidgetConfig{
+    val DomainWidgetConfig = DomainWidgetConfig(
+        updateTime = updateTime
+    )
+    return DomainWidgetConfig
+}
+fun DomainWidgetConfig.mapToData():DataWidgetConfig{
+    val DataWidgetConfig = DataWidgetConfig(
+        updateTime = updateTime
+    )
+    return DataWidgetConfig
 }
