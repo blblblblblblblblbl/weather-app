@@ -3,7 +3,10 @@ package blblblbl.simplelife.onboarding
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -16,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
 @ExperimentalPagerApi
 @Composable
@@ -31,33 +35,52 @@ fun OnBoardingScreen(
     )
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
-    Surface() {
-        Column(modifier = Modifier.fillMaxSize()) {
-            HorizontalPager(
-                modifier = Modifier.weight(10f),
-                count = OnBoardingPage.ONBOARDING_PAGES_COUNT,
-                state = pagerState,
-                verticalAlignment = Alignment.Bottom
-            ) { position ->
-                PagerScreen(onBoardingPage = pages[position])
-            }
-            HorizontalPagerIndicator(
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            Column(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .weight(1f),
-                pagerState = pagerState
-            )
-            SkipButton(modifier = Modifier.weight(1f),
-                pagerState = pagerState ) {
-
-                coroutineScope.launch { pagerState.animateScrollToPage(5) }
-
+                    .fillMaxWidth()
+                    .padding(bottom =  20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ){
+                HorizontalPagerIndicator(
+                    pagerState = pagerState
+                )
+                Button(
+                    onClick = {
+                        if (pagerState.currentPage < ONBOARDING_LAST_PAGE_INDEX) {
+                            coroutineScope.launch { pagerState.animateScrollToPage(5) }
+                        } else {
+                            startOnClick()
+                        }
+                    }
+                ) {
+                    Text(text = if (pagerState.currentPage < ONBOARDING_LAST_PAGE_INDEX) "skip" else "finish")
+                }
             }
-            FinishButton(
-                modifier = Modifier.weight(1f),
-                pagerState = pagerState
+        }
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(it)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                startOnClick()
+                HorizontalPager(
+                    count = OnBoardingPage.ONBOARDING_PAGES_COUNT,
+                    state = pagerState,
+                    verticalAlignment = Alignment.Bottom
+                ) { position ->
+                    PagerScreen(onBoardingPage = pages[position])
+                }
+
             }
         }
     }
@@ -95,65 +118,6 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
             fontSize = MaterialTheme.typography.titleMedium.fontSize,
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun SkipButton(
-    modifier: Modifier,
-    pagerState: PagerState,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 40.dp),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = (pagerState.currentPage in ONBOARDING_FIRST_PAGE_INDEX until ONBOARDING_LAST_PAGE_INDEX)
-        ) {
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "skip")
-            }
-        }
-    }
-}
-
-@ExperimentalAnimationApi
-@ExperimentalPagerApi
-@Composable
-fun FinishButton(
-    modifier: Modifier,
-    pagerState: PagerState,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 40.dp),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = pagerState.currentPage == ONBOARDING_LAST_PAGE_INDEX
-        ) {
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "ok")
-            }
-        }
     }
 }
 
