@@ -1,6 +1,7 @@
 package blblblbl.simplelife.weather
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -68,11 +69,22 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enqueueWidgetsUpdate()
         lifecycleScope.launch {
             viewModel.getSettingsFlow().collect{appConfig->
                 appConfig?.weatherConfig?.let {
                     viewModel.updateWidgetWeatherConfig(it)
+                }
+                appConfig?.widgetConfig?.let {widgetConfig->
+                    Log.d("MyLog","update worker new time${widgetConfig.updateTime}")
+                    val updateWorkRequest: PeriodicWorkRequest =
+                        PeriodicWorkRequestBuilder<WidgetUpdateWorker>(widgetConfig.updateTime, repeatIntervalTimeUnit = TimeUnit.MINUTES)
+                            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                            .build()
+                    WorkManager.getInstance(this@MainActivity).enqueueUniquePeriodicWork(
+                        UPDATE_WORKER_NAME,
+                        ExistingPeriodicWorkPolicy.UPDATE,
+                        updateWorkRequest
+                    )
                 }
             }
         }
@@ -102,17 +114,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-    fun enqueueWidgetsUpdate(){
-        val updateWorkRequest: PeriodicWorkRequest =
-            PeriodicWorkRequestBuilder<WidgetUpdateWorker>(60, repeatIntervalTimeUnit = TimeUnit.MINUTES)
-                .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-                .build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            UPDATE_WORKER_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            updateWorkRequest
-        )
     }
     companion object{
         const val UPDATE_WORKER_NAME = "UPDATE_WIDGET_FORECAST_WORKER_NAME"
