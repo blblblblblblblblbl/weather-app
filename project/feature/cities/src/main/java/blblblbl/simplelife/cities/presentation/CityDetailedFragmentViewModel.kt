@@ -10,6 +10,12 @@ import blblblbl.simplelife.cities.ui.UIError
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,19 +53,18 @@ class CityDetailedFragmentViewModel @Inject constructor(
     ){
         viewModelScope.launch {
             _loadState.value = LoadingState.LOADING
-            try {
-                _forecast.value?.location?.name?.let {name->
-                    val forecast = getForecastUseCase.getForecastByName(name,7,"no","no")
-                    _forecast.value = forecast
-                    withContext(Dispatchers.IO){
-                        saveForecastUseCase.saveForecast(forecast)
+            _forecast.value?.location?.name?.let {name->
+                val response = getForecastUseCase.getForecastByName(name,7,"yes","yes")
+                response
+                    .suspendOnSuccess {
+                        _forecast.value = this.data
+                        withContext(Dispatchers.IO){
+                            saveForecastUseCase.saveForecast(this@suspendOnSuccess.data)}
                     }
-                }
-            }
-            catch (e:Throwable){
-                e.message?.let { message->
-                    _errorText.value = UIError(message)
-                }
+                    .onFailure { viewModelScope.launch { _errorText.value = UIError(message()) } }
+                    .onError {  viewModelScope.launch { _errorText.value = UIError(message()) } }
+                    .onException { viewModelScope.launch { _errorText.value = UIError(message()) }}
+
             }
             _loadState.value = LoadingState.LOADED
         }

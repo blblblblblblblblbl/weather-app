@@ -6,6 +6,9 @@ import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.data.utils.mapToDomain
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.repository.ForecastRepository
+import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import javax.inject.Inject
 
 class ForecastRepositoryImpl @Inject constructor(
@@ -16,17 +19,17 @@ class ForecastRepositoryImpl @Inject constructor(
         days: Int,
         aqi: String,
         alerts: String
-    ): ForecastResponse =
-        forecastDataSource.getForecast(query, days, aqi, alerts).mapToDomain()
+    ): ApiResponse<ForecastResponse> =
+        forecastDataSource.getForecast(query, days, aqi, alerts)
 
     override suspend fun getForecastByLoc(
         loc: Location,
         days: Int,
         aqi: String,
         alerts: String
-    ): ForecastResponse =
-        forecastDataSource.getForecastByLoc(loc.mapToData(), days, aqi, alerts).mapToDomain()
+    ): ApiResponse<ForecastResponse> =
+        forecastDataSource.getForecastByLoc(loc, days, aqi, alerts)
 
-    override suspend fun getCurrent(query: String, aqi: String): ForecastResponse =
-        forecastDataSource.getCurrent(query, aqi).mapToDomain()
+    override suspend fun getCurrent(query: String, aqi: String): ApiResponse<ForecastResponse> =
+        forecastDataSource.getCurrent(query, aqi)
 }

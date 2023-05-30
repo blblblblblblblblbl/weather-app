@@ -16,6 +16,8 @@ import blblblbl.simplelife.weather.di.database.main.mapToDB
 import blblblbl.simplelife.widget.WeatherWidget
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
 import blblblbl.simplelife.widget.di.update.UpdateWeatherWidget
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
@@ -39,7 +41,8 @@ class WidgetUpdateWorker @AssistedInject constructor(
                     }
                     cityName?.let { cityName->
                         val forecast = getForecastUseCase.getForecastByName(cityName,7,"no","no")
-                        updateWeatherWidget.updateForecast(context,forecast)
+                        forecast.suspendOnSuccess { updateWeatherWidget.updateForecast(context,this.data) }
+
                     }
                 }
             }

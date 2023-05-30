@@ -1,6 +1,7 @@
 package blblblbl.simplelife.forecast.data.network
 
-import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
+import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -11,12 +12,12 @@ interface ForecastApi {
         @Query("days") days: Int,
         @Query("aqi") aqi: String,
         @Query("alerts") alerts: String
-    ): ForecastResponse
+    ): ApiResponse<ForecastResponse>
 
     @GET("current.json")
     suspend fun getCurrent(
         @Query("q") q: String,
         @Query("aqi") aqi: String,
         @Query("lang") lang: String = "DEFAULT_LANGUAGE"
-    ): ForecastResponse
+    ): ApiResponse<ForecastResponse>
 }

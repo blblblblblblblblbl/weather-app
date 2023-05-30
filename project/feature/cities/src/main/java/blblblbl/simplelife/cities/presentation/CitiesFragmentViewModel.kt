@@ -12,6 +12,11 @@ import blblblbl.simplelife.cities.ui.UIError
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
+import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -47,15 +52,15 @@ class CitiesFragmentViewModel @Inject constructor(
     ){
         viewModelScope.launch {
             loadStateChangeFun(LoadingState.LOADING)
-            try {
-                val forecast = getForecastUseCase.getForecastByName(name,7,"no","no")
-                withContext(Dispatchers.IO){
-                    saveForecastUseCase.saveForecast(forecast)
+            val response = getForecastUseCase.getForecastByName(name,7,"yes","yes")
+            response
+                .suspendOnSuccess {
+                    withContext(Dispatchers.IO){
+                        saveForecastUseCase.saveForecast(this@suspendOnSuccess.data)}
                 }
-            }
-            catch (e:Throwable){
-                e.message?.let { _errorText.value = UIError(it) }
-            }
+                .onFailure { viewModelScope.launch { _errorText.value = UIError(message()) } }
+                .onError {  viewModelScope.launch { _errorText.value = UIError(message()) } }
+                .onException { viewModelScope.launch { _errorText.value = UIError(message()) }}
             loadStateChangeFun(LoadingState.LOADED)
         }
     }
