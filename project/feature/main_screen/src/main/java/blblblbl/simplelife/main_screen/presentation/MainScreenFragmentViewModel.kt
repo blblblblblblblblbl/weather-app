@@ -159,8 +159,12 @@ class MainScreenFragmentViewModel @Inject constructor(
                     }
                 }
                 .onFailure { viewModelScope.launch { showError(message()) } }
-                .onError {  viewModelScope.launch { showError(message()) } }
-                .onException { viewModelScope.launch { showError(message()) }}
+                .onError {
+                    viewModelScope.launch { showError(statusCode.name) }
+                }
+                .onException {
+                    viewModelScope.launch { showError("something's gone wrong, please check your internet connection") }
+                }
             if (_isInFavourites.value){
                 _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
             }
