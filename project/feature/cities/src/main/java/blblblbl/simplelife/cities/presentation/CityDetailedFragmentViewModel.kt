@@ -62,8 +62,14 @@ class CityDetailedFragmentViewModel @Inject constructor(
                             saveForecastUseCase.saveForecast(this@suspendOnSuccess.data)}
                     }
                     .onFailure { viewModelScope.launch { _errorText.value = UIError(message()) } }
-                    .onError {  viewModelScope.launch { _errorText.value = UIError(message()) } }
-                    .onException { viewModelScope.launch { _errorText.value = UIError(message()) }}
+                    .onError {
+                        viewModelScope.launch { _errorText.value = UIError(statusCode.name) }
+                    }
+                    .onException {
+                        viewModelScope.launch {
+                            _errorText.value = UIError("something's gone wrong, please check your internet connection")
+                        }
+                    }
 
             }
             _loadState.value = LoadingState.LOADED
