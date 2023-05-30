@@ -2,6 +2,7 @@ package blblblbl.simplelife.weather.di.api.forecast
 
 import android.content.Context
 import com.google.gson.GsonBuilder
+import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -15,18 +16,6 @@ class RetrofitCreator @Inject constructor(
 ) {
     private val BASE_URL = "https://api.weatherapi.com/v1/"
     private val gson = GsonBuilder().setLenient().create()
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(
-            OkHttpClient.Builder()
-                .connectTimeout(60L, TimeUnit.SECONDS)
-                .readTimeout(60L, TimeUnit.SECONDS)
-                //.addInterceptor(MockRequestInterceptor(context))
-                .addInterceptor(authorizationInterceptor)
-                .build()
-        )
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .build()
     fun createRetrofit():Retrofit{
         val builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -34,10 +23,10 @@ class RetrofitCreator @Inject constructor(
                 OkHttpClient.Builder()
                     .connectTimeout(60L, TimeUnit.SECONDS)
                     .readTimeout(60L, TimeUnit.SECONDS)
-                    //.addInterceptor(MockRequestInterceptor(context))
                     .addInterceptor(authorizationInterceptor)
                     .build()
             )
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
         return builder.build()
     }

@@ -1,8 +1,9 @@
 package blblblbl.simplelife.forecast.data.datasource
 
-import blblblbl.simplelife.forecast.data.model.forecast.ForecastResponse
-import blblblbl.simplelife.forecast.data.model.location.Location
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
+import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.data.network.ForecastApi
+import com.skydoves.sandwich.ApiResponse
 import javax.inject.Inject
 
 class ForecastDataSourceImpl @Inject constructor(
@@ -13,7 +14,7 @@ class ForecastDataSourceImpl @Inject constructor(
         days: Int,
         aqi: String,
         alerts: String
-    ): ForecastResponse =
+    ): ApiResponse<ForecastResponse> =
         forecastApi.getForecast(query,days,aqi, alerts)
 
     override suspend fun getForecastByLoc(
@@ -21,12 +22,12 @@ class ForecastDataSourceImpl @Inject constructor(
         days: Int,
         aqi: String,
         alerts: String
-    ): ForecastResponse {
+    ): ApiResponse<ForecastResponse> {
         val query = "${loc.latitude},${loc.longitude}"
         return forecastApi.getForecast(query,days,aqi, alerts)
     }
 
 
-    override suspend fun getCurrent(query: String, aqi: String, lang: String): ForecastResponse =
+    override suspend fun getCurrent(query: String, aqi: String, lang: String): ApiResponse<ForecastResponse> =
         forecastApi.getCurrent(query,aqi, lang)
 }

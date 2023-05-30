@@ -17,6 +17,16 @@ import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.skydoves.sandwich.StatusCode
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onFailure
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnError
+import com.skydoves.sandwich.suspendOnException
+import com.skydoves.sandwich.suspendOnFailure
+import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -103,24 +113,30 @@ class MainScreenFragmentViewModel @Inject constructor(
 
     private fun searchForecast(query: String, context: Context){
         currentRequest?.cancel()
-        currentRequest = viewModelScope.launch {
-            try {
-                val forecast = getForecastUseCase.getForecastByName(query,7,"yes","yes")
-                _forecast.value = forecast
-                _isInFavourites.value = false
-                lastSearchUseCase.saveLast(forecast)
-            }
-            catch (e:Throwable){
-                e.message?.let { viewModelScope.launch { showError(it) } }
-            }
-            withContext(Dispatchers.IO){
-                _forecast.value?.location?.name?.let { name->
-                    _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+        currentRequest = viewModelScope.launch(Dispatchers.IO) {
+            val response = getForecastUseCase.getForecastByName(query,7,"yes","yes")
+            response
+                .suspendOnSuccess {
+                    _forecast.value = this.data
+                    withContext(Dispatchers.IO){
+                        _forecast.value?.location?.name?.let { name->
+                            _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+                        }
+                    }
+                    if (_isInFavourites.value){
+                        _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
+                    }
                 }
-            }
-            if (_isInFavourites.value){
-                _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
-            }
+                .onFailure {
+                    viewModelScope.launch { showError(message()) }
+                }
+                .onError {
+                    viewModelScope.launch { showError(statusCode.name) }
+                }
+                .onException {
+                    viewModelScope.launch { showError("something's gone wrong, please check your internet connection") }
+                }
+
             currentRequest = null
             _loadState.value = LoadingState.LOADED
         }
@@ -132,18 +148,19 @@ class MainScreenFragmentViewModel @Inject constructor(
     private fun getForecastByLocation(location:Location){
         currentRequest?.cancel()
         currentRequest = viewModelScope.launch {
-            val job = viewModelScope.launch {
-                val forecast = getForecastUseCase.getForecastByLoc(location,7,"yes","yes")
-                _forecast.value = forecast
-                _isInFavourites.value = false
-                lastSearchUseCase.saveLast(forecast)
-            }
-            job.join()
-            withContext(Dispatchers.IO){
-                _forecast.value?.location?.name?.let { name->
-                    _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+            val response = getForecastUseCase.getForecastByLoc(location,7,"yes","yes")
+            response
+                .suspendOnSuccess {
+                    _forecast.value = this.data
+                    withContext(Dispatchers.IO){
+                        _forecast.value?.location?.name?.let { name->
+                            _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
+                        }
+                    }
                 }
-            }
+                .onFailure { viewModelScope.launch { showError(message()) } }
+                .onError {  viewModelScope.launch { showError(message()) } }
+                .onException { viewModelScope.launch { showError(message()) }}
             if (_isInFavourites.value){
                 _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
             }
@@ -167,7 +184,9 @@ class MainScreenFragmentViewModel @Inject constructor(
                     val cancellation = CancellationTokenSource()
                     val locTask = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY ,cancellation.token)
                     locTask.addOnSuccessListener {location->
-                        getForecastByLocation(Location(longitude = location.longitude, latitude = location.latitude))
+                        location?.let { location ->
+                            getForecastByLocation(Location(longitude = location.longitude, latitude = location.latitude))
+                        }
                     }
                 }
                 catch (e:Throwable){

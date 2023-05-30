@@ -2,6 +2,7 @@ package blblblbl.simplelife.forecast.domain.repository
 
 import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
+import com.skydoves.sandwich.ApiResponse
 
 
 interface ForecastRepository {
@@ -10,16 +11,16 @@ interface ForecastRepository {
         days: Int,
         aqi: String,
         alerts: String
-    ): ForecastResponse
+    ): ApiResponse<ForecastResponse>
 
     suspend fun getForecastByLoc(
         loc: Location,
         days: Int,
         aqi: String,
         alerts: String
-    ): ForecastResponse
+    ): ApiResponse<ForecastResponse>
     suspend fun getCurrent(
         query: String,
         aqi: String
-    ): ForecastResponse
+    ): ApiResponse<ForecastResponse>
 }
