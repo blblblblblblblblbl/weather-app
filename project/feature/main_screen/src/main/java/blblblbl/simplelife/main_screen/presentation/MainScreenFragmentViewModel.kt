@@ -190,4 +190,7 @@ class MainScreenFragmentViewModel @Inject constructor(
             catch (e:Throwable){ }
         }
     }
+    fun clearCompletions(){
+        _cityVariants.value = listOf<String>()
+    }
 }
