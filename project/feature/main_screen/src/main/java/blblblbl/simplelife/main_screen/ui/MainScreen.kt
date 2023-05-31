@@ -92,7 +92,9 @@ fun MainScreen(
 
     DisposableEffect(key1 = viewModel) {
         viewModel.checkInFavourites()
-        onDispose {  }
+        onDispose {
+            viewModel.errorClear()
+        }
     }
 
     Scaffold(

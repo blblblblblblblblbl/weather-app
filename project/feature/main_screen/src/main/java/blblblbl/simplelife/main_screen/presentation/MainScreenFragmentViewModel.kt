@@ -107,6 +107,9 @@ class MainScreenFragmentViewModel @Inject constructor(
     private suspend fun showError(message:String){
         _errorText.value = UIError(message)
     }
+    fun errorClear(){
+        _errorText.value = null
+    }
 
     private fun searchForecast(query: String, context: Context){
         currentRequest?.cancel()
