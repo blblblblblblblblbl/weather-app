@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme">тема</string>
+    <string name="color_saved">цвет сохранен</string>
+    <string name="light_dark">светлая/темная</string>
+    <string name="weather">погода</string>
+    <string name="temperature">температура</string>
+    <string name="wind_speed">скорость ветра</string>
+    <string name="widget">виджет</string>
+    <string name="update_time">част. обнов. мин</string>
+</resources>

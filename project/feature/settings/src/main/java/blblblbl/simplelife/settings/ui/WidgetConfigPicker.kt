@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import blblblbl.simplelife.settings.R
 import blblblbl.simplelife.settings.domain.model.config.widget.WidgetConfig
 
 @Composable
@@ -20,7 +22,7 @@ fun WidgetConfigPicker(
 ) {
     DropDownCard(
     modifier = modifier,
-    header = "widget",
+    header = stringResource(id = R.string.widget),
     ) {
         Column(
             modifier = Modifier.padding(20.dp)
@@ -29,7 +31,7 @@ fun WidgetConfigPicker(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "update time")
+                Text(text = stringResource(id = R.string.update_time))
                 Spacer(modifier = Modifier.weight(1f))
                 UpdateTimePicker(
                     initial = initial.updateTime,

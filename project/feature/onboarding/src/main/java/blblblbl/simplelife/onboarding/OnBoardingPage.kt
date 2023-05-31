@@ -10,30 +10,30 @@ sealed class OnBoardingPage(
 ) {
     object Page1 : OnBoardingPage(
         image = R.drawable.onboarding_main,
-        title = "Main screen",
-        description = "search city by name or geo, look at current weather, add city to favourites"
+        title = "page1_title",
+        description = "page1_desc"
     )
 
     object Page2 : OnBoardingPage(
         image = R.drawable.onboarding_main_detailed,
-        title = "Forecast",
-        description = "look at detailed forecast"
+        title = "page2_title",
+        description = "page2_desc"
     )
 
     object Page3 : OnBoardingPage(
         image = R.drawable.onboarding_favourites,
-        title = "Favourites",
-        description = "look at all favourite cities in one screen, remove them by long tap, add them on home screen widget from home screen"
+        title = "page3_title",
+        description = "page3_desc"
     )
     object Page4 : OnBoardingPage(
         image = R.drawable.onboarding_settings,
-        title = "Settings",
-        description = "configure app with your preference, pick theme and weather units "
+        title = "page4_title",
+        description = "page4_desc"
     )
     object Page5 : OnBoardingPage(
         image = R.drawable.onboarding_widgets,
-        title = "Widgets",
-        description = "add widgets to home screen, there are 3 sizes"
+        title = "page5_title",
+        description = "page5_desc"
     )
 
     companion object{

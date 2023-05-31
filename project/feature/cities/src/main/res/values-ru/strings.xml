@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="updated">обновлено</string>
+    <string name="humidity">влажность</string>
+    <string name="wind">ветер</string>
+    <string name="illumination">освещенность</string>
+    <string name="air_quality">Качество воздуха, содержание в  мкГ/м3</string>
+    <string name="max_wind">макс ветер</string>
+    <string name="uv">уф</string>
+</resources>

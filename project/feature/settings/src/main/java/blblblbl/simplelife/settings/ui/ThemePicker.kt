@@ -35,7 +35,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import blblblbl.simplelife.settings.R
 import blblblbl.simplelife.settings.domain.model.config.theme.ThemeMode
 
 @Composable
@@ -43,12 +45,10 @@ fun ThemePicker(
     saveColor: (Int) -> Unit,
     setMode: (ThemeMode) -> Unit
 ) {
-    val context = LocalContext.current
     DropDownCard(
         modifier = Modifier
             .padding(20.dp),
-            //.heightIn(max = 300.dp),
-        header = "theme"
+        header = stringResource(id = R.string.theme)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -73,7 +73,7 @@ fun ThemeColorPicker(
             setShowDialog = { b -> showDialog = b },
             changeColor = { color ->
                 saveColor(color)
-                Toast.makeText(context, "color saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.resources.getString(R.string.color_saved), Toast.LENGTH_SHORT).show()
             })
     }
     val colors = mutableListOf<Color>(
@@ -91,6 +91,7 @@ fun ThemeColorPicker(
         columns = GridCells.Adaptive(50.dp),
         modifier = Modifier
             .padding(10.dp)
+            .heightIn(max = 400.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -100,7 +101,7 @@ fun ThemeColorPicker(
                 onClick =
                 {
                     saveColor(color.toArgb())
-                    Toast.makeText(context, "color saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.resources.getString(R.string.color_saved), Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
                     .size(48.dp)
@@ -155,7 +156,7 @@ fun LightDarkThemePicker(
     setMode: (ThemeMode) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "light/dark")
+        Text(text = stringResource(id = R.string.light_dark))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)

@@ -56,7 +56,7 @@ fun DropDownCard(
         }
     }
 }
-fun temepatureInUnits(tempC:Double,unit: DegreeUnit):String{
+fun temperatureInUnits(tempC:Double, unit: DegreeUnit):String{
     return when (unit){
         DegreeUnit.C->{
             "${tempC}°C"

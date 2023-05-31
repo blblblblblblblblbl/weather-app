@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import blblblbl.simplelife.settings.R
 import blblblbl.simplelife.settings.domain.model.config.weather.DegreeUnit
 import blblblbl.simplelife.settings.domain.model.config.weather.SpeedUnit
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
@@ -35,7 +37,7 @@ fun WeatherConfigPicker(
 ) {
     DropDownCard(
         modifier = modifier,
-        header = "weather",
+        header = stringResource(id = R.string.weather),
     ) {
         Column(
             modifier = Modifier.padding(20.dp)
@@ -44,7 +46,7 @@ fun WeatherConfigPicker(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "temperature")
+                Text(text = stringResource(id = R.string.temperature))
                 Spacer(modifier = Modifier.weight(1f))
                 DegreeUnitPicker(
                     initial = initial.degreeUnit,
@@ -57,7 +59,7 @@ fun WeatherConfigPicker(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "wind speed")
+                Text(text = stringResource(id = R.string.wind_speed))
                 Spacer(modifier = Modifier.weight(1f))
                 SpeedUnitPicker(
                     initial = initial.speedUnit,
@@ -101,13 +103,11 @@ fun <T> DropDownPicker(
     initial: T,
     onSelected: (T) -> Unit
 ) {
-    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     var selectedVariant by remember { mutableStateOf(initial) }
 
     Box(
         modifier = Modifier
-            //.fillMaxWidth()
             .padding(32.dp)
     ) {
         ExposedDropdownMenuBox(

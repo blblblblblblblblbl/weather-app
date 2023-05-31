@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода</string>
+    <string name="authors">Авторы</string>
+    <string name="main_dest_name">главный</string>
+    <string name="cities_dest_name">города</string>
+    <string name="settings_dest_name">настройки</string>
+    <string name="onboarding_dest_name">обучение</string>
+    <string name="authors_dest_name">авторы</string>
+    <string name="rate_app">оценить</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="updated">updated</string>
+    <string name="humidity">humidity</string>
+    <string name="wind">wind</string>
+    <string name="illumination">illumination</string>
+    <string name="air_quality">Air quality, content in μg/m3</string>
+    <string name="max_wind">max wind</string>
+    <string name="uv">uv</string>
+</resources>
