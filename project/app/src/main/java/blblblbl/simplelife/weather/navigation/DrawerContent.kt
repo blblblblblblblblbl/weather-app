@@ -20,11 +20,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import blblblbl.simplelife.weather.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +42,7 @@ fun DrawerContent(
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
-        Text(text = "Weather", textAlign = TextAlign.Start, modifier = Modifier.fillMaxWidth())
+        Text(text = stringResource(id = R.string.app_name), textAlign = TextAlign.Start, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(20.dp))
         NavigationDrawerItems(
             navController = navController,
@@ -70,7 +72,7 @@ fun DrawerContent(
                 )
             }
         }) {
-            Text(text = "rate app")
+            Text(text = stringResource(id = R.string.rate_app))
         }
     }
 
@@ -86,11 +88,12 @@ fun NavigationDrawerItems(
     var scope = rememberCoroutineScope()
     var currentBackStackEntryAsState = navController.currentBackStackEntryAsState()
     var destination = currentBackStackEntryAsState.value?.destination
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxWidth()) {
         menuDestinations.forEach {dest->
             NavigationDrawerItem(
-                label = { Text(text = dest.name) },
+                label = { Text(text = stringResource(context.resources.getIdentifier(dest.name,"string",context.packageName)) ) },
                 selected = destination?.route ==dest.route,
                 onClick = {
                     navController.navigateSingleTopTo(dest.route)

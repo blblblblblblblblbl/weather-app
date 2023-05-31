@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -139,7 +140,9 @@ fun MainScreen(
             ) {
                 forecast?.alerts?.let { alerts->
                     AlertsBlock(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
                         alerts = alerts
                     )
                 }
@@ -343,7 +346,7 @@ fun CurrentWeatherBlock(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "wind")
+                    Text(text =stringResource(id = R.string.wind))
                     Text(text = speedInUnits(windSpeed,weatherConfig.speedUnit))
                 }
             }
@@ -353,7 +356,7 @@ fun CurrentWeatherBlock(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "humidity")
+                    Text(text =stringResource(id = R.string.humidity))
                     Text(text = "${humidity}%")
                 }
             }
@@ -366,7 +369,7 @@ fun CurrentWeatherBlock(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "updated")
+                        Text(text = stringResource(id = R.string.updated))
                         Text(text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1])
                     }
                     IconButton(onClick = { refreshOnClick() }) {
@@ -665,25 +668,28 @@ fun DayBlock(
                 ) {
                     day?.maxwindKph?.let {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
-                            Text(text = "max wind    ")
+                            Text(text = stringResource(id = R.string.max_wind))
                             Text(text = speedInUnits(it,weatherConfig.speedUnit))
                         }
                     }
                     day?.avghumidity?.let {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
-                            Text(text = "humidity    ")
+                            Text(text = stringResource(id = R.string.humidity))
                             Text(text = "${it}")
                         }
                     }
                     day?.uv?.let {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
-                            Text(text = "uv    ")
+                            Text(text = stringResource(id = R.string.uv))
                             Text(text = "${it}")
                         }
                     }
@@ -769,7 +775,7 @@ fun AstroBlock(
                    }
                }
                astro.moonIllumination?.let {
-                   Text(text = "illumination  ${it}%")
+                   Text(text = "${stringResource(id = R.string.illumination)}  ${it}%")
                }
            }
        }
@@ -793,7 +799,7 @@ fun AirQualityBlock(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(text = "Air quality, content in μg/m3")
+            Text(text = stringResource(id = R.string.air_quality))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(20.dp)

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
@@ -34,9 +36,10 @@ fun SettingsScreen(
     config: AppConfig?,
     saveConfig: (AppConfig) -> Unit
 ) {
-    val context = LocalContext.current
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
         ThemePicker(
             saveColor = { color ->
                 if (config != null) {
@@ -105,7 +108,6 @@ fun DropDownCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        //.fillMaxHeight()
                 ) {
                     content()
                 }

@@ -40,12 +40,14 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import blblblbl.simplelife.main_screen.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
@@ -105,7 +107,7 @@ fun SearchWidget(
                     Text(
                         modifier = Modifier
                             .alpha(alpha = 0.5f),
-                        text = "search here"
+                        text = stringResource(id = R.string.search_here)
                     )
                 },
                 singleLine = true,

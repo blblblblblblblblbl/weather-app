@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
@@ -54,6 +55,7 @@ import blblblbl.simplelife.weather.navigation.graphs.citiesGraph
 import blblblbl.simplelife.weather.presentation.MainActivityViewModel
 import blblblbl.simplelife.weather.ui.WidgetUpdateWorker
 import blblblbl.simplelife.weather.ui.theme.WeatherTheme
+import blblblbl.simplelife.widget.stringResource
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -75,7 +77,6 @@ class MainActivity : ComponentActivity() {
                     viewModel.updateWidgetWeatherConfig(it)
                 }
                 appConfig?.widgetConfig?.let {widgetConfig->
-                    Log.d("MyLog","update worker new time${widgetConfig.updateTime}")
                     val updateWorkRequest: PeriodicWorkRequest =
                         PeriodicWorkRequestBuilder<WidgetUpdateWorker>(widgetConfig.updateTime, repeatIntervalTimeUnit = TimeUnit.MINUTES)
                             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -190,7 +191,8 @@ fun AppNavHost(
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Authors", style = MaterialTheme.typography.headlineLarge)
+                    val context = LocalContext.current
+                    Text(text = context.resources.getString(R.string.authors), style = MaterialTheme.typography.headlineLarge)
                     Text(text = "Kirill Tolmachev", style = MaterialTheme.typography.headlineLarge)
                     Text(text = "Varvara Sapozhnikova", style = MaterialTheme.typography.headlineLarge)
                 }

@@ -1,3 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Weather</string>
+    <string name="authors">Authors</string>
+    <string name="main_dest_name">main</string>
+    <string name="cities_dest_name">cities</string>
+    <string name="settings_dest_name">settings</string>
+    <string name="onboarding_dest_name">onboarding</string>
+    <string name="authors_dest_name">authors</string>
+    <string name="rate_app">rate app</string>
 </resources>

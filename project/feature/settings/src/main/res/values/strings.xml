@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme">theme</string>
+    <string name="color_saved">color saved</string>
+    <string name="light_dark">light/dark</string>
+    <string name="weather">weather</string>
+    <string name="temperature">temperature</string>
+    <string name="wind_speed">wind speed</string>
+    <string name="widget">widget</string>
+    <string name="update_time">update time</string>
+</resources>

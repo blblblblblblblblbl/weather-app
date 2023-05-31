@@ -13,7 +13,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.*
@@ -41,7 +43,7 @@ fun OnBoardingScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom =  20.dp),
+                    .padding(bottom = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ){
@@ -57,28 +59,33 @@ fun OnBoardingScreen(
                         }
                     }
                 ) {
-                    Text(text = if (pagerState.currentPage < ONBOARDING_LAST_PAGE_INDEX) "skip" else "finish")
+                    Text(text = if (pagerState.currentPage < ONBOARDING_LAST_PAGE_INDEX) stringResource(id = R.string.skip) else stringResource(id = R.string.finish))
                 }
             }
         }
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize().padding(it)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
                 HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
                     count = OnBoardingPage.ONBOARDING_PAGES_COUNT,
                     state = pagerState,
                     verticalAlignment = Alignment.Bottom
                 ) { position ->
-                    PagerScreen(onBoardingPage = pages[position])
+                    PagerScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onBoardingPage = pages[position]
+                    )
                 }
 
             }
@@ -87,10 +94,13 @@ fun OnBoardingScreen(
 }
 
 @Composable
-fun PagerScreen(onBoardingPage: OnBoardingPage) {
+fun PagerScreen(
+    modifier: Modifier=Modifier,
+    onBoardingPage: OnBoardingPage
+) {
+    val context = LocalContext.current
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -102,7 +112,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
             contentDescription = "Pager Image"
         )
         Text(
-            text = onBoardingPage.title,
+            text = stringResource(context.resources.getIdentifier(onBoardingPage.title,"string",context.packageName)),
             modifier = Modifier
                 .fillMaxWidth(),
 
@@ -114,7 +124,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage) {
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp)
                 .padding(top = 20.dp),
-            text = onBoardingPage.description,
+            text = stringResource(context.resources.getIdentifier(onBoardingPage.description,"string",context.packageName)) ,
             fontSize = MaterialTheme.typography.titleMedium.fontSize,
             textAlign = TextAlign.Center
         )
