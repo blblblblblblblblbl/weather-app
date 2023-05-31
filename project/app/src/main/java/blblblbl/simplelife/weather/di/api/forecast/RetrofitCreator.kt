@@ -12,7 +12,8 @@ import javax.inject.Inject
 
 class RetrofitCreator @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val authorizationInterceptor: ApiKeyInterceptor
+    private val authorizationInterceptor: ApiKeyInterceptor,
+    private val languageInterceptor: LanguageInterceptor
 ) {
     private val BASE_URL = "https://api.weatherapi.com/v1/"
     private val gson = GsonBuilder().setLenient().create()
@@ -24,6 +25,7 @@ class RetrofitCreator @Inject constructor(
                     .connectTimeout(60L, TimeUnit.SECONDS)
                     .readTimeout(60L, TimeUnit.SECONDS)
                     .addInterceptor(authorizationInterceptor)
+                    .addInterceptor(languageInterceptor)
                     .build()
             )
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
