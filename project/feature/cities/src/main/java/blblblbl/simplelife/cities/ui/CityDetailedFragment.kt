@@ -226,18 +226,18 @@ fun CurrentWeatherBlock(
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    forecast.current?.condition?.text?.let { Text(text = it, textAlign = TextAlign.Center) }
                     forecast.current?.condition?.icon?.let {
                         GlideImage(
                             imageModel = { "https:" + it },
                             modifier = Modifier.size(64.dp)
                         )
                     }
+                    forecast.current?.condition?.text?.let { Text(text = it, textAlign = TextAlign.Center) }
+
                 }
             }
             forecast.current?.windKph?.let { windSpeed ->
@@ -273,7 +273,7 @@ fun CurrentWeatherBlock(
                         Text(text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1])
                     }
                     IconButton(onClick = { refreshOnClick() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "refresh")
+                        Icon(Icons.Default.Refresh, contentDescription = "refresh",modifier = Modifier.size(64.dp))
                     }
                 }
             }
@@ -531,6 +531,9 @@ fun DayBlock(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            day?.condition?.text?.let{
+                Text(text =it, textAlign = TextAlign.Center,modifier=Modifier.fillMaxWidth())
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -544,9 +547,6 @@ fun DayBlock(
                             imageModel = { "https:" + it },
                             modifier = Modifier.size(64.dp)
                         )
-                    }
-                    day?.condition?.text?.let{
-                        Text(text = it, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp))
                     }
                     day?.avgtempC?.let {
                         Text(

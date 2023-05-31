@@ -13,7 +13,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,10 +51,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -322,22 +319,22 @@ fun CurrentWeatherBlock(
                 }
                 forecast.current?.tempC?.let {
                     Text(
-                        text = temepatureInUnits(it,weatherConfig.degreeUnit),
+                        text = temperatureInUnits(it,weatherConfig.degreeUnit),
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    forecast.current?.condition?.text?.let { Text(text = it, textAlign = TextAlign.Center) }
                     forecast.current?.condition?.icon?.let {
                         GlideImage(
                             imageModel = { "https:" + it },
                             modifier = Modifier.size(64.dp)
                         )
                     }
+                    forecast.current?.condition?.text?.let { Text(text = it, textAlign = TextAlign.Center) }
+
                 }
             }
             forecast.current?.windKph?.let { windSpeed ->
@@ -373,7 +370,7 @@ fun CurrentWeatherBlock(
                         Text(text = "${lastUpdated.subSequence(8, 10)}.${lastUpdated.subSequence(5, 7)} "+lastUpdated.split(" ")[1])
                     }
                     IconButton(onClick = { refreshOnClick() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "refresh")
+                        Icon(Icons.Default.Refresh, contentDescription = "refresh", Modifier.size(64.dp))
                     }
                 }
             }
@@ -435,7 +432,7 @@ fun DayHead(
                     contentDescription = "temperature",
                     modifier = Modifier.requiredWidth(14.dp)
                 )
-                Text(text = temepatureInUnits(it,weatherConfig.degreeUnit))
+                Text(text = temperatureInUnits(it,weatherConfig.degreeUnit))
             }
 
         }
@@ -529,7 +526,7 @@ fun HourCard(
                 }
                 hour.tempC?.let {
                     Text(
-                        text = temepatureInUnits(it,weatherConfig.degreeUnit),
+                        text = temperatureInUnits(it,weatherConfig.degreeUnit),
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
@@ -631,6 +628,9 @@ fun DayBlock(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            day?.condition?.text?.let{
+                Text(text =it, textAlign = TextAlign.Center,modifier=Modifier.fillMaxWidth())
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -645,20 +645,17 @@ fun DayBlock(
                             modifier = Modifier.size(64.dp)
                         )
                     }
-                    day?.condition?.text?.let{
-                        Text(text = it, style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp))
-                    }
                     day?.avgtempC?.let {
                         Text(
-                            text = temepatureInUnits(it,weatherConfig.degreeUnit),
+                            text = temperatureInUnits(it,weatherConfig.degreeUnit),
                             style = MaterialTheme.typography.headlineLarge
                         )
                     }
                     val minTemp = day?.mintempC
                     val maxTemp = day?.maxtempC
                     if (minTemp!=null&&maxTemp!=null){
-                        val minString = temepatureInUnits(minTemp,weatherConfig.degreeUnit)
-                        val maxString = temepatureInUnits(maxTemp,weatherConfig.degreeUnit)
+                        val minString = temperatureInUnits(minTemp,weatherConfig.degreeUnit)
+                        val maxString = temperatureInUnits(maxTemp,weatherConfig.degreeUnit)
                         Text(text = "${minString.subSequence(0,minString.lastIndex-1)}...${maxString}")
                     }
                 }
