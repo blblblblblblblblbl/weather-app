@@ -9,6 +9,8 @@ import blblblbl.simplelife.forecast.domain.repository.ForecastRepository
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.onSuccess
 import com.skydoves.sandwich.suspendOnSuccess
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 class ForecastRepositoryImpl @Inject constructor(
@@ -20,7 +22,11 @@ class ForecastRepositoryImpl @Inject constructor(
         aqi: String,
         alerts: String
     ): ApiResponse<ForecastResponse> =
-        forecastDataSource.getForecast(query, days, aqi, alerts)
+        forecastDataSource.getForecast(query, days, aqi, alerts).onSuccess {
+            val df = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            val updateTime = df.format(Date())
+            this.data.current?.lastUpdated = updateTime
+        }
 
     override suspend fun getForecastByLoc(
         loc: Location,
@@ -28,8 +34,16 @@ class ForecastRepositoryImpl @Inject constructor(
         aqi: String,
         alerts: String
     ): ApiResponse<ForecastResponse> =
-        forecastDataSource.getForecastByLoc(loc, days, aqi, alerts)
+        forecastDataSource.getForecastByLoc(loc, days, aqi, alerts).onSuccess {
+            val df = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            val updateTime = df.format(Date())
+            this.data.current?.lastUpdated = updateTime
+        }
 
     override suspend fun getCurrent(query: String, aqi: String): ApiResponse<ForecastResponse> =
-        forecastDataSource.getCurrent(query, aqi)
+        forecastDataSource.getCurrent(query, aqi).onSuccess {
+            val df = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            val updateTime = df.format(Date())
+            this.data.current?.lastUpdated = updateTime
+        }
 }

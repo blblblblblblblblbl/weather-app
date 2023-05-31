@@ -17,15 +17,10 @@ import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.skydoves.sandwich.StatusCode
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.onSuccess
-import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
-import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +29,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -117,11 +114,12 @@ class MainScreenFragmentViewModel @Inject constructor(
             val response = getForecastUseCase.getForecastByName(query,7,"yes","yes")
             response
                 .suspendOnSuccess {
-                    _forecast.value = this.data
+                    _forecast.value = data
                     withContext(Dispatchers.IO){
                         _forecast.value?.location?.name?.let { name->
                             _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
                         }
+                        lastSearchUseCase.saveLast(data)
                     }
                     if (_isInFavourites.value){
                         _forecast.value?.let { dataBaseUseCase.saveForecast(it) }
@@ -156,7 +154,9 @@ class MainScreenFragmentViewModel @Inject constructor(
                         _forecast.value?.location?.name?.let { name->
                             _isInFavourites.value = dataBaseUseCase.isCityInFavourites(name)
                         }
+                        lastSearchUseCase.saveLast(data)
                     }
+
                 }
                 .onFailure { viewModelScope.launch { showError(message()) } }
                 .onError {
