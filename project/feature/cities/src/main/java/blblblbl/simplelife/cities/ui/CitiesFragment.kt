@@ -66,7 +66,6 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @Composable
 fun CitiesFragment(
@@ -74,7 +73,6 @@ fun CitiesFragment(
 ) {
     val viewModel = hiltViewModel<CitiesFragmentViewModel>()
     val appConfig by viewModel.settings.collectAsState()
-    val context = LocalContext.current
     val error by viewModel.errorText.collectAsState()
     Surface(
         modifier = Modifier.fillMaxSize()

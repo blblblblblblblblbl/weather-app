@@ -1,10 +1,10 @@
 package blblblbl.simplelife.settings.ui
 
-import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import blblblbl.simplelife.settings.presentation.SettingsFragmentViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun SettingsFragment(){

@@ -1,7 +1,6 @@
 package blblblbl.simplelife.widget
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
@@ -17,7 +16,6 @@ import androidx.glance.appwidget.updateIf
 import androidx.glance.currentState
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import androidx.glance.text.Text
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.settings.domain.model.config.weather.WeatherConfig
 import blblblbl.simplelife.widget.WidgetKeys.Prefs.cityNamePK
