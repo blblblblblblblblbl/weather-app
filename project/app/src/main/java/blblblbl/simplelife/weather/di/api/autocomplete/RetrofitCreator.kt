@@ -18,18 +18,6 @@ class RetrofitCreator @Inject constructor(
 ) {
     private val BASE_URL = "https://api.geoapify.com/v1/geocode/"
     private val gson = GsonBuilder().setLenient().create()
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(
-            OkHttpClient.Builder()
-                .connectTimeout(60L, TimeUnit.SECONDS)
-                .readTimeout(60L, TimeUnit.SECONDS)
-                //.addInterceptor(MockRequestInterceptor(context))
-                .addInterceptor(authorizationInterceptor)
-                .build()
-        )
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .build()
     fun createRetrofit():Retrofit{
         val builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -37,7 +25,6 @@ class RetrofitCreator @Inject constructor(
                 OkHttpClient.Builder()
                     .connectTimeout(60L, TimeUnit.SECONDS)
                     .readTimeout(60L, TimeUnit.SECONDS)
-                    //.addInterceptor(MockRequestInterceptor(context))
                     .addInterceptor(authorizationInterceptor)
                     .build()
             )

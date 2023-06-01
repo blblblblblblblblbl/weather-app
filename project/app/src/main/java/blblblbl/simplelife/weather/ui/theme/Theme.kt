@@ -14,9 +14,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import blblblbl.simplelife.material_you_utils.scheme.Scheme
 import blblblbl.simplelife.settings.domain.model.config.AppConfig
 import blblblbl.simplelife.settings.domain.model.config.theme.ThemeMode
-import blblblbl.simplelife.weather.ui.theme.material_you_utils.scheme.Scheme
 import kotlinx.coroutines.flow.StateFlow
 
 
@@ -106,7 +106,7 @@ fun WeatherTheme(
     }
     config?.themeConfig?.color?.let { themeColor->
         if (themeColor!= Color.Transparent.toArgb()){
-            val scheme:Scheme = if (!isDark) Scheme.light(themeColor) else Scheme.dark(themeColor)
+            val scheme: Scheme = if (!isDark) Scheme.light(themeColor) else Scheme.dark(themeColor)
             colorScheme = ColorScheme(
                 primary= Color(scheme.primary),
                 onPrimary= Color(scheme.onPrimary),

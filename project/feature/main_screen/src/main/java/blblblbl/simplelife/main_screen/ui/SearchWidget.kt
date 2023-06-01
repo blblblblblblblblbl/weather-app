@@ -1,7 +1,6 @@
 package blblblbl.simplelife.main_screen.ui
 
 import android.Manifest
-import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border

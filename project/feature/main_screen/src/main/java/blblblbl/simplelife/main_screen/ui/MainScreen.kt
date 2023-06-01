@@ -258,7 +258,7 @@ private fun ErrorMessage(error:UIError) {
             color = MaterialTheme.colorScheme.errorContainer,
             tonalElevation = 4.dp
         ) {
-            message?.let { message->
+            message.let { message->
                 Text(
                     text = message,
                     modifier = Modifier.padding(16.dp)
@@ -628,7 +628,7 @@ fun DayBlock(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            day?.condition?.text?.let{
+            day.condition?.text?.let{
                 Text(text =it, textAlign = TextAlign.Center,modifier=Modifier.fillMaxWidth())
             }
             Row(
@@ -651,8 +651,8 @@ fun DayBlock(
                             style = MaterialTheme.typography.headlineLarge
                         )
                     }
-                    val minTemp = day?.mintempC
-                    val maxTemp = day?.maxtempC
+                    val minTemp = day.mintempC
+                    val maxTemp = day.maxtempC
                     if (minTemp!=null&&maxTemp!=null){
                         val minString = temperatureInUnits(minTemp,weatherConfig.degreeUnit)
                         val maxString = temperatureInUnits(maxTemp,weatherConfig.degreeUnit)
@@ -663,7 +663,7 @@ fun DayBlock(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    day?.maxwindKph?.let {
+                    day.maxwindKph?.let {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(20.dp)
@@ -672,7 +672,7 @@ fun DayBlock(
                             Text(text = speedInUnits(it,weatherConfig.speedUnit))
                         }
                     }
-                    day?.avghumidity?.let {
+                    day.avghumidity?.let {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(20.dp)
@@ -681,7 +681,7 @@ fun DayBlock(
                             Text(text = "${it}")
                         }
                     }
-                    day?.uv?.let {
+                    day.uv?.let {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(20.dp)
