@@ -1,6 +1,7 @@
 package blblblbl.simplelife.weather.di.api.forecast
 
 import android.content.Context
+import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import com.google.gson.GsonBuilder
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,7 +17,11 @@ class RetrofitCreator @Inject constructor(
     private val languageInterceptor: LanguageInterceptor
 ) {
     private val BASE_URL = "https://api.weatherapi.com/v1/"
-    private val gson = GsonBuilder().setLenient().create()
+    private val gson =
+        GsonBuilder()
+            .setLenient()
+            .registerTypeAdapter(ForecastResponse::class.java,ForecastResponseAdapter())
+            .create()
     fun createRetrofit():Retrofit{
         val builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
