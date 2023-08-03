@@ -74,8 +74,6 @@ fun SearchWidget(
         shape = MaterialTheme.shapes.extraLarge,
     ) {
 
-
-
         Column() {
             var isKeyboardVisible by remember { mutableStateOf(false) }
             val view = LocalView.current

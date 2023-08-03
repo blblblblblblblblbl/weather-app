@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="page1_title">Главный экран</string>
-    <string name="page1_desc">ищите города по их названию или по своему местоположению, смотрите прогноз погоды и добавляйте города в избранные</string>
+    <string name="page1_desc">Ищите прогноз по городам или по своему местоположению</string>
     <string name="page2_title">Прогноз</string>
-    <string name="page2_desc">просматривайте подробную информацию о погоде</string>
+    <string name="page2_desc">Просматривайте подробную почасовую информацию о погоде</string>
     <string name="page3_title">Избранные</string>
-    <string name="page3_desc">смотрите на все избранные города на одном экране, удаляйте их по долгому нажатию, добавляйте их на виджеты рабочего стола</string>
+    <string name="page3_desc">Добавляйте ваши любиые города в одно место</string>
     <string name="page4_title">Настройки</string>
-    <string name="page4_desc">настраивайте приложение под себя, выбирайте тему и единицы измерения</string>
+    <string name="page4_desc">Настраивайте приложение под себя</string>
     <string name="page5_title">Виджеты</string>
-    <string name="page5_desc">добавляйте виджеты на экран смартфона, есть 3 размера</string>
-    <string name="skip">пропустить</string>
-    <string name="finish">завершить</string>
+    <string name="page5_desc">Добавляйте виджеты на экран смартфона</string>
+    <string name="next">Далее</string>
 </resources>

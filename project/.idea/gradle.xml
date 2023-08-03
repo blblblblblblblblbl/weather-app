@@ -23,6 +23,7 @@
             <option value="$PROJECT_DIR$/shared/database" />
             <option value="$PROJECT_DIR$/shared/forecast" />
             <option value="$PROJECT_DIR$/shared/material_you_utils" />
+            <option value="$PROJECT_DIR$/shared/user_preferences" />
           </set>
         </option>
       </GradleProjectSettings>
