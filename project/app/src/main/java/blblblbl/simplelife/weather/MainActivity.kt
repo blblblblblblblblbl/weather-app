@@ -35,7 +35,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import blblblbl.simplelife.onboarding.OnBoardingScreenView
+import blblblbl.simplelife.onboarding.OnBoardingScreenController
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
@@ -86,9 +86,7 @@ class MainActivity : ComponentActivity() {
                 SideEffect {
                     systemUiController.setSystemBarsColor(color)
                 }
-                Surface {
-                    AppScreen()
-                }
+                AppScreen()
             }
         }
     }
@@ -157,7 +155,7 @@ fun AppNavHost(
             SettingsFragment()
         }
         composable(route = OnBoardingDest.route) {
-            OnBoardingScreenView {
+            OnBoardingScreenController {
                 navController.navigate(MainDest.route)
             }
         }

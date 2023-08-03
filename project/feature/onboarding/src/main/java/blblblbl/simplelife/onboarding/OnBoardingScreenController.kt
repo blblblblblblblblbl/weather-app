@@ -7,6 +7,10 @@ import androidx.compose.runtime.Composable
  */
 
 @Composable
-fun OnBoardingScreenController() {
-    OnBoardingScreenView {}
+fun OnBoardingScreenController(
+    lastPageButtonOnClick: () -> Unit
+) {
+    OnBoardingScreenView {
+        lastPageButtonOnClick()
+    }
 }
