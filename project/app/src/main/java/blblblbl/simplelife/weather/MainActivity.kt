@@ -1,7 +1,6 @@
 package blblblbl.simplelife.weather
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,11 +20,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,8 +37,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import blblblbl.simplelife.main_screen.ui.MainScreen
-import blblblbl.simplelife.onboarding.OnBoardingScreen
-import blblblbl.simplelife.onboarding.ShowOnBoarding
+import blblblbl.simplelife.onboarding.OnBoardingScreenController
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
 import blblblbl.simplelife.weather.navigation.AppSettingDest
@@ -55,17 +49,13 @@ import blblblbl.simplelife.weather.navigation.graphs.citiesGraph
 import blblblbl.simplelife.weather.presentation.MainActivityViewModel
 import blblblbl.simplelife.weather.ui.WidgetUpdateWorker
 import blblblbl.simplelife.weather.ui.theme.WeatherTheme
-import blblblbl.simplelife.widget.stringResource
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var showOnBoarding: ShowOnBoarding
 
     private val viewModel: MainActivityViewModel by viewModels()
     @OptIn(ExperimentalAnimationApi::class)
@@ -102,16 +92,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    var showApp by remember { mutableStateOf(showOnBoarding.IsShown()) }
-                    if (showApp){
-                        AppScreen()
-                    }
-                    else {
-                        OnBoardingScreen {
-                            showOnBoarding.saveShown()
-                            showApp = true
-                        }
-                    }
+                    AppScreen()
                 }
             }
         }
@@ -182,7 +163,7 @@ fun AppNavHost(
             SettingsFragment()
         }
         composable(route = OnBoardingDest.route) {
-            OnBoardingScreen {
+            OnBoardingScreenController {
                 navController.navigate(MainDest.route)
             }
         }
