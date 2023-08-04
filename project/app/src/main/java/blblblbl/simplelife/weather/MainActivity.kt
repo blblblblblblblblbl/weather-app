@@ -36,7 +36,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import blblblbl.simplelife.main_screen.ui.MainScreen
+import blblblbl.simplelife.main_screen.ui.MainScreenController
 import blblblbl.simplelife.onboarding.OnBoardingScreenController
 import blblblbl.simplelife.settings.ui.SettingsFragment
 import blblblbl.simplelife.weather.navigation.AppDestination
@@ -156,7 +156,7 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(route = MainDest.route) {
-            MainScreen(menuOnclick)
+            MainScreenController(menuOnclick)
         }
         citiesGraph(navController)
         composable(route = AppSettingDest.route) {
