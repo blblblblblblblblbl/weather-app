@@ -20,6 +20,8 @@
             <option value="$PROJECT_DIR$/feature/settings" />
             <option value="$PROJECT_DIR$/feature/widget" />
             <option value="$PROJECT_DIR$/shared" />
+            <option value="$PROJECT_DIR$/shared/Core" />
+            <option value="$PROJECT_DIR$/shared/CoreUtils" />
             <option value="$PROJECT_DIR$/shared/database" />
             <option value="$PROJECT_DIR$/shared/forecast" />
             <option value="$PROJECT_DIR$/shared/material_you_utils" />
