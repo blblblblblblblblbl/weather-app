@@ -9,7 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import blblblbl.simplelife.coreutils.utils.fake
+import blblblbl.simplelife.forecast.domain.model.forecast.Alert
 import blblblbl.simplelife.forecast.domain.model.forecast.Alerts
 
 /**
@@ -17,11 +20,11 @@ import blblblbl.simplelife.forecast.domain.model.forecast.Alerts
  */
 
 @Composable
-fun AlertsBlock(
-    modifier: Modifier = Modifier,
-    alerts: Alerts
-){
-    if(alerts.alert.isNotEmpty()){
+fun AlertsView(
+    alerts: Alerts,
+    modifier: Modifier = Modifier
+) {
+    if (alerts.alert.isNotEmpty()) {
         Surface(
             modifier = modifier,
             shape = MaterialTheme.shapes.large,
@@ -32,10 +35,17 @@ fun AlertsBlock(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                alerts.alert.forEach{alert->
+                alerts.alert.forEach { alert ->
                     alert.event?.let { Text(text = it) }
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    val alerts = Alerts(List(5) { index -> fake<Alert>().copy(event = "alert event $index") })
+    AlertsView(alerts = alerts)
 }

@@ -1,4 +1,4 @@
-package blblblbl.simplelife.main_screen.ui.component
+package blblblbl.simplelife.coreutils.utils.compose
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -19,12 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import blblblbl.simplelife.main_screen.ui.UIError
 import kotlinx.coroutines.delay
 
 /**
  * @author Kirill Tolmachev 04.08.2023
  */
+
+class UIError(val message: String)
 
 @Composable
 fun ErrorMessage(error: UIError) {

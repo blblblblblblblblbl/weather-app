@@ -43,6 +43,8 @@ dependencies {
     implementation project(path: ':shared:forecast')
     implementation project(path: ':feature:autocomplete')
     implementation project(path: ':feature:settings')
+    implementation project(path: ':shared:Core')
+    implementation project(path: ':shared:CoreUtils')
 
     implementation 'androidx.core:core-ktx:1.10.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'

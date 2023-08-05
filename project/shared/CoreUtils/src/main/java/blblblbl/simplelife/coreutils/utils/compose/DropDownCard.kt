@@ -1,4 +1,4 @@
-package blblblbl.simplelife.main_screen.ui.component
+package blblblbl.simplelife.coreutils.utils.compose
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable

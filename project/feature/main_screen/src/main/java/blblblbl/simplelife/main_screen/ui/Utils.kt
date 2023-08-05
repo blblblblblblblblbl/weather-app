@@ -4,8 +4,6 @@ package blblblbl.simplelife.main_screen.ui
 import blblblbl.simplelife.settings.domain.model.config.weather.DegreeUnit
 import blblblbl.simplelife.settings.domain.model.config.weather.SpeedUnit
 
-class UIError(val message: String)
-
 fun temperatureInUnits(tempC:Double, unit: DegreeUnit):String{
     return when (unit){
         DegreeUnit.C->{

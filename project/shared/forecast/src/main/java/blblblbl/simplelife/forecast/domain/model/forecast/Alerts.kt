@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 
 data class Alerts (
-    @SerializedName("alert" ) var alert : ArrayList<Alert> = arrayListOf()
+    @SerializedName("alert" ) var alert : List<Alert> = listOf()
 )

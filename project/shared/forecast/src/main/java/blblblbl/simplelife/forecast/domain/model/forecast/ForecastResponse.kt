@@ -11,3 +11,4 @@ data class ForecastResponse (
     @SerializedName("alerts"   ) var alerts   : Alerts?   = Alerts()
 
 )
+

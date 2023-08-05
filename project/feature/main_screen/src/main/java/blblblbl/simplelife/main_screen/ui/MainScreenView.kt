@@ -29,9 +29,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.main_screen.presentation.LoadingState
-import blblblbl.simplelife.main_screen.ui.component.AlertsBlock
-import blblblbl.simplelife.main_screen.ui.component.CurrentWeatherBlock
-import blblblbl.simplelife.main_screen.ui.component.NextDays
+import blblblbl.simplelife.main_screen.ui.component.AlertsView
+import blblblbl.simplelife.main_screen.ui.component.CurrentWeatherView
+import blblblbl.simplelife.main_screen.ui.component.DailyForecastView
 import blblblbl.simplelife.main_screen.ui.component.SearchWidget
 import blblblbl.simplelife.settings.domain.model.config.AppConfig
 
@@ -70,7 +70,7 @@ fun MainScreenView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 forecast?.alerts?.let { alerts->
-                    AlertsBlock(
+                    AlertsView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp),
@@ -79,7 +79,7 @@ fun MainScreenView(
                 }
                 appConfig?.weatherConfig?.let { weatherConfig ->
                     forecast?.let { forecast ->
-                        CurrentWeatherBlock(
+                        CurrentWeatherView(
                             modifier = Modifier.fillMaxWidth(0.7f),
                             forecast = forecast,
                             refreshOnClick = onRefreshClick,
@@ -102,10 +102,8 @@ fun MainScreenView(
                         }
                     }
                     forecast?.forecast?.let { nextDays ->
-                        NextDays(
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .fillMaxWidth(),
+                        DailyForecastView(
+                            modifier = Modifier.padding(10.dp).fillMaxWidth(),
                             forecast = nextDays,
                             weatherConfig =weatherConfig
                         )

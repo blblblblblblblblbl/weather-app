@@ -2,17 +2,16 @@ package blblblbl.simplelife.main_screen.presentation
 
 import android.content.Context
 import android.location.LocationManager
-import android.util.Log
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import blblblbl.simplelife.autocomplete.domain.usecase.SearchCitiesVariantsUseCase
+import blblblbl.simplelife.coreutils.utils.compose.UIError
 import blblblbl.simplelife.forecast.domain.model.forecast.ForecastResponse
 import blblblbl.simplelife.forecast.domain.model.location.Location
 import blblblbl.simplelife.forecast.domain.usecase.GetForecastUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.DataBaseUseCase
 import blblblbl.simplelife.main_screen.domain.usecase.LastSearchUseCase
-import blblblbl.simplelife.main_screen.ui.UIError
 import blblblbl.simplelife.settings.domain.usecase.GetAppConfigUseCase
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -29,8 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
