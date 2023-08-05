@@ -8,8 +8,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import blblblbl.simplelife.coreutils.utils.compose.ErrorMessage
 import blblblbl.simplelife.main_screen.presentation.MainScreenFragmentViewModel
-import blblblbl.simplelife.main_screen.ui.component.ErrorMessage
 
 
 @Composable
